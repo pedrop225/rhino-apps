@@ -1,0 +1,4 @@
+
+* 	Completar edición de usuarios
+		
+*	Mejorar enfoque de devolución de recibos
