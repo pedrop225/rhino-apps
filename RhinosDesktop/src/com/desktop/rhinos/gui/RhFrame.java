@@ -7,16 +7,19 @@ import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
 import com.desktop.rhinos.connector.MySqlConnector;
 import com.desktop.rhinos.connector.MySqlConnector.App;
+import com.desktop.rhinos.gui.dataCollector.AccountNumberCollector;
 import com.desktop.rhinos.gui.table.ConsultancyTableDialog;
 import com.desktop.rhinos.gui.table.UserTableDialog;
 
@@ -35,6 +38,8 @@ public class RhFrame extends JFrame {
 	private JMenuItem edClients;
 	private JMenu edContracts;
 	private JMenuItem addContract;
+	private JMenu edTools;
+	private JMenuItem accountNumberChecker;
 	private JMenu edConsultancy;
 	private JMenuItem addConsultancy;
 	private JMenuItem editConsultancy;
@@ -138,7 +143,6 @@ public class RhFrame extends JFrame {
 		bHelp.setBackground(Color.LIGHT_GRAY);
 		bHelp.setFocusable(false);
 		bHelp.setIcon(new ImageIcon(RhFrame.class.getResource("/icons/Help/Help_24x24.png")));
-//		bHelp.addActionListener(logOut.getActionListeners()[0]);
 		
 		tBar.add(bLogOut);
 		tBar.add(bClients);
@@ -177,6 +181,8 @@ public class RhFrame extends JFrame {
 		edContracts.setIcon(new ImageIcon(RhFrame.class.getResource("/icons/Globe/Globe_24x24.png")));
 		addContract = new JMenuItem("Añadir Contrato");
 		addContract.setIcon(new ImageIcon(RhFrame.class.getResource("/icons/Add/Add_16x16.png")));
+		edTools = new JMenu("Herramientas");
+		accountNumberChecker = new JMenuItem("Datos Bancarios");
 		edConsultancy = new JMenu("Asesorías");
 		edConsultancy.setIcon(new ImageIcon(RhFrame.class.getResource("/icons/Archive/Archive_24x24.png")));
 		addConsultancy = new JMenuItem("Añadir Asesoría");
@@ -191,6 +197,8 @@ public class RhFrame extends JFrame {
 		edClients.setFont(App.DEFAULT_FONT);
 		edContracts.setFont(App.DEFAULT_FONT);
 		addContract.setFont(App.DEFAULT_FONT);
+		edTools.setFont(App.DEFAULT_FONT);
+		accountNumberChecker.setFont(App.DEFAULT_FONT);
 		edConsultancy.setFont(App.DEFAULT_FONT);
 		addConsultancy.setFont(App.DEFAULT_FONT);
 		editConsultancy.setFont(App.DEFAULT_FONT);
@@ -203,6 +211,8 @@ public class RhFrame extends JFrame {
 		mEdit.add(edClients);
 		mEdit.add(edContracts);
 		edContracts.add(addContract);
+		mEdit.add(edTools);
+		edTools.add(accountNumberChecker);
 		mEdit.add(edConsultancy);
 		edConsultancy.add(addConsultancy);
 		edConsultancy.add(editConsultancy);
@@ -314,6 +324,22 @@ public class RhFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				rhPanel.addContract();
+			}
+		});
+		
+		accountNumberChecker.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JDialog dialog = new JDialog();
+				dialog.setTitle("Datos Bancarios");
+				dialog.setModal(true);
+				
+				dialog.getContentPane().add(Util.packInJP(new AccountNumberCollector()));
+
+				dialog.pack();
+				dialog.setLocationRelativeTo(null);
+				dialog.setVisible(true);
 			}
 		});
 		

@@ -1,4 +1,10 @@
-
-* 	Completar edición de usuarios
 		
-*	Mejorar enfoque de devolución de recibos
+* 	Mejorar enfoque de devolución de recibos
+
+* 	Diseñar e implementar gestion de facturas, retenciones e impuestos.
+
+* 	Modificar módulo de informes. Añadir lo necesario para poder elegir entre
+	servicios y facturas.
+
+
+	

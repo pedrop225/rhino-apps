@@ -27,7 +27,6 @@ import com.android.rhinos.gest.Dni;
 import com.android.rhinos.gest.Id;
 import com.android.rhinos.gest.Nie;
 import com.desktop.rhinos.connector.MySqlConnector;
-import com.desktop.rhinos.gui.dataCollector.AccountNumberCollector;
 import com.desktop.rhinos.gui.dataCollector.ClientDataCollector;
 import com.desktop.rhinos.gui.dataCollector.ConsultancyDataCollector;
 import com.desktop.rhinos.gui.table.ServiceTable;
@@ -51,7 +50,6 @@ public class AddContract extends JFrame {
 	private ClientDataCollector cliData;
 	private ConsultancyDataCollector conData;
 	private ServiceTable serData;
-	private AccountNumberCollector accountNumber;
 	
 	private JPanel centerPanel;
 	private JPanel southPanel;
@@ -61,7 +59,6 @@ public class AddContract extends JFrame {
 	
 	private boolean editMode;
 	private JTabbedPane tabbedPane;
-	private JPanel panel;
 	
 	/**
 	 * @wbp.parser.constructor
@@ -108,18 +105,12 @@ public class AddContract extends JFrame {
 		serData.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 		tabbedPane.addTab("Servicios", null, serData, null);
 		
-		panel = new JPanel();
-		tabbedPane.addTab("Datos Bancarios", null, panel, null);
-		
 		conData = new ConsultancyDataCollector();
 		tabbedPane.addTab("Asesoría", Util.packInJP(conData));
 		
 		conData.setFieldsEditable(false);
 		setFieldsEditable(false);
 		
-		accountNumber = new AccountNumberCollector();
-		panel.add(accountNumber);
-
 		cliData.getNif().addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {

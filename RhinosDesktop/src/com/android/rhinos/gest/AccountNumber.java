@@ -8,7 +8,6 @@ public class AccountNumber {
 	private static final DecimalFormat DF_2 = new DecimalFormat("00");
 
 	private String pais = "ES";
-	private String iban = "00";
 	private String entidad;
 	private String oficina;
 	private String dc;
