@@ -10,11 +10,17 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import com.desktop.rhinos.connector.MySqlConnector.App;
 import com.desktop.rhinos.gui.Util;
 import com.toedter.calendar.JCalendar;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Component;
+import javax.swing.Box;
 
 public class DateFilter extends JPanel {
 
@@ -28,8 +34,11 @@ public class DateFilter extends JPanel {
 	private JCalendar calendar_2;
 	private JButton btnUpdate;
 	
+	private JRadioButton services;
+	private JRadioButton invoices;
 	private JRadioButton date;
 	private JRadioButton expiry;
+	private Component horizontalStrut;
 
 	/**
 	 * Create the frame.
@@ -58,7 +67,9 @@ public class DateFilter extends JPanel {
 		
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		add(panel, BorderLayout.NORTH);
-		
+
+		services = new JRadioButton("Servicios", true);
+		invoices = new JRadioButton("Facturas");		
 		date = new JRadioButton("Fecha", true);
 		expiry = new JRadioButton("Vencimiento");
 		
@@ -66,6 +77,16 @@ public class DateFilter extends JPanel {
 		bg.add(date);
 		bg.add(expiry);
 		
+		ButtonGroup bg2 = new ButtonGroup();
+		bg2.add(services);
+		bg2.add(invoices);
+		
+		panel.add(services);		
+		panel.add(invoices);
+		
+		horizontalStrut = Box.createHorizontalStrut(20);
+		horizontalStrut.setMinimumSize(new Dimension(30, 0));
+		panel.add(horizontalStrut);
 		panel.add(date);
 		panel.add(expiry);
 		
