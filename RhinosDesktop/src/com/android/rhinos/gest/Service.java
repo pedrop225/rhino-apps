@@ -17,6 +17,7 @@ public class Service implements Comparable<Service>, Serializable {
 	
 	private int extId;
 	private double commission;
+	private String ref;
 	private String service;
 	private String campaign;
 	private Date date;
@@ -49,6 +50,14 @@ public class Service implements Comparable<Service>, Serializable {
 
 	public void setExtId(int extId) {
 		this.extId = extId;
+	}
+	
+	public void setRef(String ref){
+		this.ref = ref; 
+	}
+	
+	public String getRef() {
+		return ref;
 	}
 	
 	public Service(String service, String commission) {

@@ -35,8 +35,9 @@ public class RhFrame extends JFrame {
 	
 	private JMenu mEdit;
 	private JMenuItem edClients;
-	private JMenu edContracts;
-	private JMenuItem addContract;
+	private JMenu edService;
+	private JMenuItem addService;
+	private JMenuItem addInvoice;
 	private JMenu edTools;
 	private JMenuItem accountNumberChecker;
 	private JMenu edConsultancy;
@@ -119,7 +120,7 @@ public class RhFrame extends JFrame {
 		bAddContract.setBackground(Color.LIGHT_GRAY);
 		bAddContract.setFocusable(false);
 		bAddContract.setIcon(new ImageIcon(RhFrame.class.getResource("/icons/Add/Add_24x24.png")));
-		bAddContract.addActionListener(addContract.getActionListeners()[0]);
+		bAddContract.addActionListener(addService.getActionListeners()[0]);
 
 		
 		bSettings = new JButton();
@@ -176,12 +177,15 @@ public class RhFrame extends JFrame {
 		mEdit = new JMenu("Editar");
 		edClients = new JMenuItem("Cliente .."); 
 		edClients.setIcon(new ImageIcon(RhFrame.class.getResource("/icons/User/User_24x24.png")));
-		edContracts = new JMenu("Contratos");
-		edContracts.setIcon(new ImageIcon(RhFrame.class.getResource("/icons/Globe/Globe_24x24.png")));
-		addContract = new JMenuItem("Añadir Contrato");
-		addContract.setIcon(new ImageIcon(RhFrame.class.getResource("/icons/Add/Add_16x16.png")));
+		edService = new JMenu("Servicios");
+		edService.setIcon(new ImageIcon(RhFrame.class.getResource("/icons/Globe/Globe_24x24.png")));
+		addService = new JMenuItem("Añadir Servicio");
+		addService.setIcon(new ImageIcon(RhFrame.class.getResource("/icons/Add/Add_16x16.png")));
+		addInvoice = new JMenuItem("Añadir Factura");
 		edTools = new JMenu("Herramientas");
+		edTools.setIcon(new ImageIcon(RhFrame.class.getResource("/icons/tools.png")));
 		accountNumberChecker = new JMenuItem("Datos Bancarios");
+		accountNumberChecker.setIcon(new ImageIcon(RhFrame.class.getResource("/icons/bank.png")));
 		edConsultancy = new JMenu("Asesorías");
 		edConsultancy.setIcon(new ImageIcon(RhFrame.class.getResource("/icons/Archive/Archive_24x24.png")));
 		addConsultancy = new JMenuItem("Añadir Asesoría");
@@ -194,8 +198,9 @@ public class RhFrame extends JFrame {
 		
 		mEdit.setFont(App.DEFAULT_FONT);
 		edClients.setFont(App.DEFAULT_FONT);
-		edContracts.setFont(App.DEFAULT_FONT);
-		addContract.setFont(App.DEFAULT_FONT);
+		edService.setFont(App.DEFAULT_FONT);
+		addService.setFont(App.DEFAULT_FONT);
+		addInvoice.setFont(App.DEFAULT_FONT);
 		edTools.setFont(App.DEFAULT_FONT);
 		accountNumberChecker.setFont(App.DEFAULT_FONT);
 		edConsultancy.setFont(App.DEFAULT_FONT);
@@ -208,8 +213,9 @@ public class RhFrame extends JFrame {
 		editUser.setFont(App.DEFAULT_FONT);
 	
 		mEdit.add(edClients);
-		mEdit.add(edContracts);
-		edContracts.add(addContract);
+		mEdit.add(edService);
+		edService.add(addService);
+		edService.add(addInvoice);
 		mEdit.add(edTools);
 		edTools.add(accountNumberChecker);
 		mEdit.add(edConsultancy);
@@ -318,11 +324,20 @@ public class RhFrame extends JFrame {
 			}
 		});
 		
-		addContract.addActionListener(new ActionListener() {
+		addService.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				rhPanel.addContract();
+			}
+		});
+		
+		addInvoice.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AddInvoice ai = new AddInvoice();
+				ai.setVisible(true);
 			}
 		});
 		

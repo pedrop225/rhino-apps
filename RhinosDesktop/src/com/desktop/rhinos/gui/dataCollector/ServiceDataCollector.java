@@ -48,6 +48,7 @@ public class ServiceDataCollector extends JDialog {
 	public static final int ACCEPTED = 0;
 	public static final int CANCELLED = -1;
 	
+	private JTextField ref;
 	private JComboBox<Object> campaign;
 	private JComboBox<Service> service;
 	private CommissionEditor commission;
@@ -55,6 +56,7 @@ public class ServiceDataCollector extends JDialog {
 	private JDateChooser expiryDch;
 	private JComboBox<String> state;
 	
+	private JLabel labRef;
 	private JLabel labCampaign;
 	private JLabel labService;
 	private JLabel labCommission;
@@ -101,7 +103,7 @@ public class ServiceDataCollector extends JDialog {
 		
 		c = new JPanel(new BorderLayout());
 		c.setBorder(BorderFactory.createTitledBorder(" Servicio "));
-		
+
 		state = new JComboBox<String>();
 		state.addItem(Service.STATES[Service.PENDING]);
 		state.addItem(Service.STATES[Service.VERIFIED]);
@@ -110,6 +112,7 @@ public class ServiceDataCollector extends JDialog {
 		
 		campaign = new JComboBox<Object>(importUserCampaigns().toArray());
 		service = new JComboBox<Service>();
+		ref = new JTextField();
 		commission = new CommissionEditor();
 		commission.setEnabled(false);
 
@@ -141,6 +144,7 @@ public class ServiceDataCollector extends JDialog {
 		
 		accept = new JButton("Guardar");
 		
+		labRef = new JLabel("Referencia");
 		labState = new JLabel("Estado: ");
 		labCampaign = new JLabel("Campaña: ");
 		labService = new JLabel("Servicio: ");
@@ -153,7 +157,8 @@ public class ServiceDataCollector extends JDialog {
 		state.setFont(App.DEFAULT_FONT);
 		campaign.setFont(App.DEFAULT_FONT);
 		service.setFont(App.DEFAULT_FONT);
-		
+		ref.setFont(App.DEFAULT_FONT);
+
 		accept.addActionListener(new ActionListener() {
 			
 			@Override
@@ -197,6 +202,7 @@ public class ServiceDataCollector extends JDialog {
 		labPanel.add(labState);
 		labPanel.add(labCampaign);
 		labPanel.add(labService);
+		labPanel.add(labRef);
 		
 		labCommission = new JLabel("Comisi\u00F3n:");
 		labPanel.add(labCommission);
@@ -206,6 +212,9 @@ public class ServiceDataCollector extends JDialog {
 		dataPanel.add(state);
 		dataPanel.add(campaign);
 		dataPanel.add(service);
+		dataPanel.add(ref);
+		
+		ref.setEnabled(false);
 		
 		dataPanel.add(commission);
 		commission.setColumns(10);

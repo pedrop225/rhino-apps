@@ -1,26 +1,23 @@
 package com.desktop.rhinos.gui.dataCollector;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.util.Date;
 
+import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JSeparator;
-import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import com.desktop.rhinos.connector.MySqlConnector.App;
 import com.desktop.rhinos.gui.Util;
 import com.toedter.calendar.JCalendar;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Component;
-import javax.swing.Box;
 
 public class DateFilter extends JPanel {
 

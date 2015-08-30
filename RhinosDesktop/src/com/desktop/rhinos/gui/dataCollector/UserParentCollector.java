@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -17,7 +16,6 @@ import javax.swing.JTextField;
 import com.android.rhinos.gest.User;
 import com.desktop.rhinos.connector.MySqlConnector;
 import com.desktop.rhinos.connector.MySqlConnector.App;
-import com.desktop.rhinos.gui.UserHierarchyDialog;
 import com.desktop.rhinos.gui.Util;
 import com.desktop.rhinos.gui.dataCollector.interfaces.UserDisplay;
 
@@ -125,71 +123,5 @@ public class UserParentCollector extends JPanel implements UserDisplay {
 		tf_comm.setEditable(e);
 		
 		accept.setVisible(e);
-	}
-}
-
-@SuppressWarnings("serial")
-class UChooserLauncher extends JPanel {
-	
-	private JTextField t_field;
-	private JButton btn;
-	
-	private UserHierarchyDialog uhd;
-	private User user;
-	
-	public UChooserLauncher() {
-		super(new BorderLayout());
-		t_field = new JTextField(25);
-		t_field.setEditable(false);
-		t_field.setFont(App.DEFAULT_FONT);
-
-		btn = new JButton(new ImageIcon(UChooserLauncher.class.getResource("/icons/hierarchy.png")));
-		btn.setFocusable(false);
-		btn.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				uhd = new UserHierarchyDialog();
-				uhd.setUser(App.user);
-				uhd.setVisible(true);
-				
-				new Thread() {
-					public void run() {
-						while (uhd.isVisible()) {
-							try {
-								Thread.sleep(500);
-							}
-							catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						}
-						
-						if (uhd.getExitMode() == JOptionPane.OK_OPTION) {
-							setUser(uhd.getSelectedUser());
-						}
-					};
-				}.start();
-			}
-		});
-		
-		add(t_field);
-		add(btn, BorderLayout.EAST);
-	}
-	
-	public void setFieldsEditable(boolean e) {
-		btn.setEnabled(e);
-	}
-	
-	public void setTextFieldColumns(int columns) {
-		t_field.setColumns(columns);
-	}
-	
-	public User getSelectedUser() {
-		return user;
-	}
-	
-	public void setUser(User u) {
-		user = u;
-		t_field.setText((u != null) ? user.getName().toUpperCase() : "");
 	}
 }

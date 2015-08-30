@@ -14,6 +14,7 @@ public class RhinosDesktop {
 		try {
 		    com.jtattoo.plaf.acryl.AcrylLookAndFeel.setTheme("Green", "", "");
 			UIManager.setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");
+			
 		} 
 		catch (Exception e) {}
 			    
