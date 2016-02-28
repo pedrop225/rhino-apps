@@ -8,12 +8,25 @@ public class Service implements Comparable<Service>, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	/*
+	 * Estado del servicio
+	 * */
 	public static final int PENDING = 0;
 	public static final int VERIFIED = 1;
 	public static final int CANCELLED = 2;
 	public static final int RETURNED = 3;
 	
+	/*
+	 * Formas de pago
+	 * */
+	public static final int MENSUAL = 0;
+	public static final int BIMENSUAL = 1;
+	public static final int TRIMESTRAL = 2;
+	public static final int SEMESTRAL = 3;
+	public static final int ANUAL = 4;
+	
 	public static final String[] STATES = {"Pendiente", "Verificado", "Anulado", "Devuelto"};
+	public static final String[] F_PAGO = {"MENSUAL", "BIMENSUAL", "TRIMESTRAL", "SEMESTRAL", "ANUAL"};
 	
 	private int extId;
 	private double commission;

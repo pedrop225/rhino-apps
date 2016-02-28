@@ -1,6 +1,3 @@
-import java.util.ArrayList;
-import java.util.Enumeration;
-
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 
@@ -17,11 +14,6 @@ public class RhinosDesktop {
 		try {
 		    com.jtattoo.plaf.acryl.AcrylLookAndFeel.setTheme("Green", "", "");
 			UIManager.setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");
-			
-	//		Enumeration v = UIManager.getDefaults().keys();
-			for (Enumeration v = UIManager.getDefaults().keys(); v.hasMoreElements();) {
-				System.out.println(v.nextElement());
-			}
 		} 
 		catch (Exception e) {}
 			    

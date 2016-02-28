@@ -17,6 +17,7 @@ import java.util.Scanner;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -27,7 +28,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
-import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.android.rhinos.gest.Campaign;
@@ -44,11 +44,23 @@ import com.toedter.calendar.JDateChooser;
 public class ServiceDataCollector extends JDialog {
 
 	private static final long serialVersionUID = 1L;
-	
+
+	//modo en que se oculta la ventana (ACEPTAR/CANCELAR)
 	public static final int ACCEPTED = 0;
 	public static final int CANCELLED = -1;
 	
-	private JTextField ref;
+	//selector de usuarios
+	private UChooserLauncher uchooser;
+
+	//1º columna de datos (LABELS)
+	private JLabel labCampaign;
+	private JLabel labService;
+	private JLabel labCommission;
+	private JLabel labDate;
+	private JLabel labExpiry;
+	private JLabel labState;
+	 
+	//1º columna de datos (DATA)
 	private JComboBox<Object> campaign;
 	private JComboBox<Service> service;
 	private CommissionEditor commission;
@@ -56,39 +68,60 @@ public class ServiceDataCollector extends JDialog {
 	private JDateChooser expiryDch;
 	private JComboBox<String> state;
 	
+	//2º columna de datos (ETIQUETAS)
 	private JLabel labRef;
-	private JLabel labCampaign;
-	private JLabel labService;
-	private JLabel labCommission;
-	private JLabel labDate;
-	private JLabel labExpiry;
-	private JLabel labState;
+	private JLabel labPago;
+	private JLabel labPrimaAnual;
+	private JLabel labCcc;
+	private JLabel labCartera;
+	private JLabel labAnualizar;
 	
+	//2º columna de datos (DATA)
+	private JTextField ref;
+	private JComboBox<String> pago;
+	private JTextField primaAnual;
+	private JTextField ccc;
+	private JCheckBox cartera;
+	private JCheckBox anualizar;
+	
+	//grids contenedores para las etiquetas anteriores
 	private JPanel labPanel;
 	private JPanel dataPanel;
+	private JPanel labPanel2;
+	private JPanel dataPanel2;
 	
-	private UChooserLauncher uchooser;
+	/*
+	 * panel central, engloba las columnas de datos y el textarea para las notas
+	 * del servicio.
+	 */
+	private JPanel centerPanel;
 	
-	private JButton accept;
-	
-	//indica el modo en que se oculta la ventana (ACEPTAR/CANCELAR)
-	private int exitMode = CANCELLED;
-	
+	/*
+	 * Engloba las columnas de datos
+	 * */
 	private JPanel c;
-	
-	private String clientId;
-	
-	//guarda el indice externo del servicio a modificar. En caso de ser -1, inserta
-	//un nuevo registro en la base de datos como normalmente
-	private int toModify = -1;
 	
 	//notas del servicio
 	private JTextArea notes;
 	
+	//botones del módulo
 	private JButton btnDocs;
 	private JButton btnScan;
-	private JButton btnPdf;
-		
+	private JButton btnPdf;	
+	private JButton accept;
+
+	//indica el modo en que se oculta la ventana (ACEPTAR/CANCELAR)
+	private int exitMode = CANCELLED;
+	
+	//id del cliente propietario del servicio
+	private String clientId;
+	
+	/* 	guarda el indice externo del servicio a modificar. En caso de ser -1, inserta
+	 * 	un nuevo registro en la base de datos. De otra manera modificará el registro ya
+	 * 	existente.
+	 */
+	private int toModify = -1;
+	
 	public ServiceDataCollector(String _c) {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(ServiceDataCollector.class.getResource("/icons/Globe/Globe_16x16.png")));
 		clientId = _c;
@@ -101,18 +134,27 @@ public class ServiceDataCollector extends JDialog {
 		setTitle("Configurar Servicio");
 		setResizable(false);
 		
-		c = new JPanel(new BorderLayout());
+		getContentPane().setLayout(new BorderLayout());
+		centerPanel = new JPanel(new GridLayout(2, 1));
+		c = new JPanel(new GridLayout(1,  2, 15, 0));
 		c.setBorder(BorderFactory.createTitledBorder(" Servicio "));
 
-		state = new JComboBox<String>();
-		state.addItem(Service.STATES[Service.PENDING]);
-		state.addItem(Service.STATES[Service.VERIFIED]);
-		state.addItem(Service.STATES[Service.CANCELLED]);
-		state.addItem(Service.STATES[Service.RETURNED]);
+		/*
+		 * Etiquetas 1º columna (LABELS)
+		 * */
+		labState = new JLabel("Estado: ");
+		labCampaign = new JLabel("Campaña: ");
+		labService = new JLabel("Servicio: ");
+		labCommission = new JLabel("Comision: ");
+		labDate = new JLabel("Fecha: ");
+		labExpiry = new JLabel("Vencimiento: ");
 		
+		/*
+		 * 1º Columna de datos (DATA)
+		 * */
+		state = new JComboBox<String>(Service.STATES);
 		campaign = new JComboBox<Object>(importUserCampaigns().toArray());
 		service = new JComboBox<Service>();
-		ref = new JTextField();
 		commission = new CommissionEditor();
 		commission.setEnabled(false);
 
@@ -125,6 +167,135 @@ public class ServiceDataCollector extends JDialog {
 		expiryDch.setFont(App.DEFAULT_FONT);
 		expiryDch.setDateFormatString("dd/MM/yyyy");
 		expiryDch.getDateEditor().setEnabled(false);
+		
+		/*
+		 * 2º Columna de datos (LABELS)
+		 * */
+		labRef = new JLabel("Referencia:");
+		labPago = new JLabel("F. Pago:");
+		labPrimaAnual = new JLabel("P. Anual:");
+		labCcc = new JLabel("CCC:");
+		labCartera = new JLabel("Cartera:");
+		labAnualizar = new JLabel("Anualizar:");
+		
+		/*
+		 * 2º Columna de datos (DATA)
+		 * */
+		ref = new JTextField();
+		pago = new JComboBox<String>(Service.F_PAGO);
+		primaAnual = new JTextField();
+		ccc = new JTextField();
+		cartera = new JCheckBox("", true);
+		anualizar = new JCheckBox("", false);
+		
+		/*
+		 * Notas del servicio
+		 * */
+		notes = new JTextArea();
+		notes.setBackground(UIManager.getColor("Button.background"));
+		notes.setEditable(false);
+		notes.setTabSize(3);
+		notes.setLineWrap(true);
+		notes.setWrapStyleWord(true);
+		
+		//Setting fonts
+		state.setFont(App.DEFAULT_FONT);
+		campaign.setFont(App.DEFAULT_FONT);
+		service.setFont(App.DEFAULT_FONT);
+		commission.setFont(App.DEFAULT_FONT);
+		
+		ref.setFont(App.DEFAULT_FONT);
+		pago.setFont(App.DEFAULT_FONT);
+		primaAnual.setFont(App.DEFAULT_FONT);
+		ccc.setFont(App.DEFAULT_FONT);
+		
+		notes.setFont(App.DEFAULT_FONT);
+		
+		//packing 
+		labPanel = new JPanel(new GridLayout(0, 1, 0, 3));
+		dataPanel = new JPanel(new GridLayout(0, 1, 0, 3));
+		
+		labPanel2 = new JPanel(new GridLayout(0, 1, 0, 3));
+		dataPanel2 = new JPanel(new GridLayout(0, 1, 0, 3));
+		
+		labPanel.add(labState);
+		labPanel.add(labCampaign);
+		labPanel.add(labService);		
+		labPanel.add(labCommission);
+		labPanel.add(labDate);
+		labPanel.add(labExpiry);
+		
+		dataPanel.add(state);
+		dataPanel.add(campaign);
+		dataPanel.add(service);
+		dataPanel.add(commission);
+		dataPanel.add(dch);
+		dataPanel.add(expiryDch);
+		
+		labPanel2.add(labRef);
+		labPanel2.add(labPago);
+		labPanel2.add(labPrimaAnual);
+		labPanel2.add(labCcc);
+		labPanel2.add(labCartera);
+		labPanel2.add(labAnualizar);
+		
+		dataPanel2.add(ref);
+		dataPanel2.add(pago);
+		dataPanel2.add(primaAnual);
+		dataPanel2.add(ccc);
+		dataPanel2.add(cartera);
+		dataPanel2.add(anualizar);
+		
+		JPanel col_1 = new JPanel(new BorderLayout(10, 5));
+		JPanel col_2 = new JPanel(new BorderLayout(10, 5));
+		
+		col_1.add(labPanel, BorderLayout.WEST);
+		col_1.add(dataPanel);
+		
+		col_2.add(labPanel2, BorderLayout.WEST);
+		col_2.add(dataPanel2);
+		
+		c.add(col_1);
+		c.add(col_2);
+		
+		centerPanel.add(c);
+		
+		//Selector de usuarios
+		uchooser = new UChooserLauncher();
+		getContentPane().add(Util.packInJP(new FlowLayout(FlowLayout.RIGHT), uchooser), BorderLayout.NORTH);
+		getContentPane().add(centerPanel, BorderLayout.CENTER);
+		
+		//notas del servicio
+		JPanel notesPanel = new JPanel(new BorderLayout());
+		notesPanel.setBorder(BorderFactory.createTitledBorder("Notas del Servicio"));		
+		notesPanel.add(new JScrollPane(notes));
+		
+		centerPanel.add(notesPanel);
+
+		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+		getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+		
+		btnDocs = new JButton("");
+		btnDocs.setIcon(new ImageIcon(ServiceDataCollector.class.getResource("/icons/document.png")));
+		buttonPanel.add(btnDocs);
+		
+		btnScan = new JButton("");
+		btnScan.setIcon(new ImageIcon(ServiceDataCollector.class.getResource("/icons/scanner.png")));
+		buttonPanel.add(btnScan);
+		
+		btnPdf = new JButton("");
+		btnPdf.setIcon(new ImageIcon(ServiceDataCollector.class.getResource("/icons/pdf.png")));
+		buttonPanel.add(btnPdf);
+		
+		accept = new JButton("Guardar");
+		buttonPanel.add(accept);
+		
+		btnDocs.setEnabled(false);
+		btnScan.setEnabled(false);
+		btnPdf.setEnabled(false);
+		
+		//listeners
+		updateServices();
 		
 		campaign.addItemListener(new ItemListener() {
 			
@@ -142,25 +313,50 @@ public class ServiceDataCollector extends JDialog {
 			}
 		});
 		
-		accept = new JButton("Guardar");
-		
-		labRef = new JLabel("Referencia");
-		labState = new JLabel("Estado: ");
-		labCampaign = new JLabel("Campaña: ");
-		labService = new JLabel("Servicio: ");
-		labDate = new JLabel("Fecha: ");
-		labExpiry = new JLabel("Vencimiento: ");
-		
-		labPanel = new JPanel(new GridLayout(0, 1, 0, 3));
-		dataPanel = new JPanel(new GridLayout(0, 1, 0, 3));
-		
-		state.setFont(App.DEFAULT_FONT);
-		campaign.setFont(App.DEFAULT_FONT);
-		service.setFont(App.DEFAULT_FONT);
-		ref.setFont(App.DEFAULT_FONT);
-
-		accept.addActionListener(new ActionListener() {
+		btnDocs.addActionListener(new ActionListener() {
 			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				new DocumentsDialog(toModify).setVisible(true);
+			}
+		});
+		
+		btnScan.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent arg0) {
+				JOptionPane.showMessageDialog(null, "Not Available yet.", "Error", JOptionPane.ERROR_MESSAGE);
+			}
+		});
+		
+		btnPdf.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JFileChooser fch = new JFileChooser();
+				fch.setFileFilter(new FileNameExtensionFilter("PDF", "pdf"));
+				
+				if (fch.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+					File f = fch.getSelectedFile();
+					
+					String r = "";
+					Scanner sc = new Scanner(campaign.getSelectedItem().toString());
+					while (sc.hasNext())
+						r += sc.next().charAt(0);
+					sc.close();
+					
+					sc = new Scanner(service.getSelectedItem().toString());
+					while (sc.hasNext())
+						r += sc.next().charAt(0);
+					sc.close();				
+					r = r.toUpperCase();
+					
+					MySqlConnector.getInstance().addDocument(f, toModify, r);
+				}
+			}
+		});
+				
+		accept.addActionListener(new ActionListener() {
+					
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				exitMode = ACCEPTED;
@@ -198,117 +394,6 @@ public class ServiceDataCollector extends JDialog {
 					JOptionPane.showMessageDialog(null, "Error: \""+commission.getText()+"\" no es una cifra válida..", "Error", JOptionPane.ERROR_MESSAGE);
 			}
 		});
-		
-		labPanel.add(labState);
-		labPanel.add(labCampaign);
-		labPanel.add(labService);
-		labPanel.add(labRef);
-		
-		labCommission = new JLabel("Comisi\u00F3n:");
-		labPanel.add(labCommission);
-		labPanel.add(labDate);
-		labPanel.add(labExpiry);
-		
-		dataPanel.add(state);
-		dataPanel.add(campaign);
-		dataPanel.add(service);
-		dataPanel.add(ref);
-		
-		ref.setEnabled(false);
-		
-		dataPanel.add(commission);
-		commission.setColumns(10);
-		dataPanel.add(dch);
-		dataPanel.add(expiryDch);
-		
-		c.setLayout(new BorderLayout(10, 5));
-		c.add(labPanel, BorderLayout.WEST);
-		c.add(dataPanel);
-		c.add(Util.packInJP(new FlowLayout(FlowLayout.LEFT), accept), BorderLayout.SOUTH);
-		
-		updateServices();
-		getContentPane().setLayout(new BorderLayout());
-		getContentPane().add(c, BorderLayout.CENTER);
-		
-		uchooser = new UChooserLauncher();
-		getContentPane().add(Util.packInJP(new FlowLayout(FlowLayout.RIGHT), uchooser), BorderLayout.NORTH);
-		
-		//adding free space
-		getContentPane().add(new JPanel(), BorderLayout.WEST);
-		JPanel panel = new JPanel();
-		panel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Notas del Servicio", TitledBorder.LEFT, TitledBorder.TOP, null, null));
-		getContentPane().add(panel, BorderLayout.EAST);
-		panel.setLayout(new BorderLayout(0, 0));
-		
-		notes = new JTextArea(0, 40);
-		notes.setFont(App.DEFAULT_FONT);
-		notes.setBackground(UIManager.getColor("Button.background"));
-		notes.setEditable(false);
-		notes.setTabSize(3);
-		notes.setLineWrap(true);
-		notes.setWrapStyleWord(true);
-		panel.add(new JScrollPane(notes), BorderLayout.CENTER);
-		JPanel panel_1 = new JPanel();
-		FlowLayout flowLayout = (FlowLayout) panel_1.getLayout();
-		flowLayout.setHgap(10);
-		flowLayout.setAlignment(FlowLayout.RIGHT);
-		getContentPane().add(panel_1, BorderLayout.SOUTH);
-		
-		btnDocs = new JButton("");
-		btnDocs.setIcon(new ImageIcon(ServiceDataCollector.class.getResource("/icons/document.png")));
-		panel_1.add(btnDocs);
-		btnDocs.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				new DocumentsDialog(toModify).setVisible(true);
-			}
-		});
-		
-		btnScan = new JButton("");
-		btnScan.setIcon(new ImageIcon(ServiceDataCollector.class.getResource("/icons/scanner.png")));
-		panel_1.add(btnScan);
-		btnScan.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("Not Available");
-			}
-		});
-		
-		btnPdf = new JButton("");
-		btnPdf.setIcon(new ImageIcon(ServiceDataCollector.class.getResource("/icons/pdf.png")));
-		panel_1.add(btnPdf);
-		
-		btnPdf.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				JFileChooser fch = new JFileChooser();
-				fch.setFileFilter(new FileNameExtensionFilter("PDF", "pdf"));
-				
-				if (fch.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-					File f = fch.getSelectedFile();
-					
-					String r = "";
-					Scanner sc = new Scanner(campaign.getSelectedItem().toString());
-					while (sc.hasNext())
-						r += sc.next().charAt(0);
-					sc.close();
-					
-					sc = new Scanner(service.getSelectedItem().toString());
-					while (sc.hasNext())
-						r += sc.next().charAt(0);
-					sc.close();				
-					r = r.toUpperCase();
-					
-					MySqlConnector.getInstance().addDocument(f, toModify, r);
-				}
-			}
-		});
-
-		btnDocs.setEnabled(false);
-		btnScan.setEnabled(false);
-		btnPdf.setEnabled(false);
 		
 		pack();
 	}
