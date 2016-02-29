@@ -6,7 +6,8 @@
 	
 	$date_type = ($_REQUEST['date_type'] == 0) ? 'date' : 'expiry';
 	
-	$q = mysql_query("	SELECT Services.id, idClient, name, campaign, service, date, expiry, commission, state, notes
+	$q = mysql_query("	SELECT Services.id, idClient, name, campaign, service, date, expiry, commission, state, notes,
+								referencia, f_pago, p_neta, ccc, cartera, anualizar
 						FROM Clients, Services
 						WHERE idUser='".$_REQUEST['idUser']."' AND 
 								Clients.id=Services.idClient 		AND

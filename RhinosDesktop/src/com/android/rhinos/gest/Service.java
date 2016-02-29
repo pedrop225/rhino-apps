@@ -30,13 +30,18 @@ public class Service implements Comparable<Service>, Serializable {
 	
 	private int extId;
 	private double commission;
-	private String ref;
 	private String service;
 	private String campaign;
 	private Date date;
 	private Date expiryDate;
 	private int state;
 	private String notes;
+	private String referencia;
+	private int f_pago;
+	private double prima;
+	private String ccc;
+	private boolean cartera;
+	private boolean anualizar;
 	
 	private String titular;
 	private Id id;
@@ -63,14 +68,6 @@ public class Service implements Comparable<Service>, Serializable {
 
 	public void setExtId(int extId) {
 		this.extId = extId;
-	}
-	
-	public void setRef(String ref){
-		this.ref = ref; 
-	}
-	
-	public String getRef() {
-		return ref;
 	}
 	
 	public Service(String service, String commission) {
@@ -169,5 +166,53 @@ public class Service implements Comparable<Service>, Serializable {
 	 */
 	public void setNotes(String notes) {
 		this.notes = notes;
+	}
+
+	public String getReferencia() {
+		return referencia;
+	}
+
+	public int getF_pago() {
+		return f_pago;
+	}
+
+	public double getPrima() {
+		return prima;
+	}
+
+	public String getCcc() {
+		return ccc;
+	}
+
+	public boolean isCartera() {
+		return cartera;
+	}
+
+	public boolean isAnualizar() {
+		return anualizar;
+	}
+
+	public void setReferencia(String referencia) {
+		this.referencia = referencia;
+	}
+
+	public void setF_pago(int f_pago) {
+		this.f_pago = f_pago;
+	}
+
+	public void setpNeta(double prima) {
+		this.prima = prima;
+	}
+
+	public void setCcc(String ccc) {
+		this.ccc = ccc;
+	}
+
+	public void setCartera(boolean cartera) {
+		this.cartera = cartera;
+	}
+
+	public void setAnualizar(boolean anualizar) {
+		this.anualizar = anualizar;
 	}
 }

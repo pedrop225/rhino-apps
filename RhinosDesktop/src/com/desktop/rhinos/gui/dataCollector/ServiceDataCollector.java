@@ -10,6 +10,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
@@ -21,6 +22,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -29,6 +31,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.MaskFormatter;
 
 import com.android.rhinos.gest.Campaign;
 import com.android.rhinos.gest.Client;
@@ -80,7 +83,7 @@ public class ServiceDataCollector extends JDialog {
 	private JTextField ref;
 	private JComboBox<String> pago;
 	private JTextField primaAnual;
-	private JTextField ccc;
+	private JFormattedTextField ccc;
 	private JCheckBox cartera;
 	private JCheckBox anualizar;
 	
@@ -136,6 +139,8 @@ public class ServiceDataCollector extends JDialog {
 		
 		getContentPane().setLayout(new BorderLayout());
 		centerPanel = new JPanel(new GridLayout(2, 1));
+		centerPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		
 		c = new JPanel(new GridLayout(1,  2, 15, 0));
 		c.setBorder(BorderFactory.createTitledBorder(" Servicio "));
 
@@ -184,9 +189,17 @@ public class ServiceDataCollector extends JDialog {
 		ref = new JTextField();
 		pago = new JComboBox<String>(Service.F_PAGO);
 		primaAnual = new JTextField();
-		ccc = new JTextField();
 		cartera = new JCheckBox("", true);
 		anualizar = new JCheckBox("", false);
+		
+		MaskFormatter mask;
+		try {
+			mask = new MaskFormatter("ES##-####-####-####-####-####");
+			ccc = new JFormattedTextField(mask);
+		}
+		catch (ParseException e1) {
+			ccc = new JFormattedTextField();
+		}
 		
 		/*
 		 * Notas del servicio
@@ -267,12 +280,13 @@ public class ServiceDataCollector extends JDialog {
 		
 		//notas del servicio
 		JPanel notesPanel = new JPanel(new BorderLayout());
-		notesPanel.setBorder(BorderFactory.createTitledBorder("Notas del Servicio"));		
+		notesPanel.setBorder(BorderFactory.createTitledBorder(" Notas "));		
 		notesPanel.add(new JScrollPane(notes));
 		
 		centerPanel.add(notesPanel);
 
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+		buttonPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		getContentPane().add(buttonPanel, BorderLayout.SOUTH);
 		
 		btnDocs = new JButton("");
@@ -385,8 +399,17 @@ public class ServiceDataCollector extends JDialog {
 						MySqlConnector.getInstance().addService(user.getExtId(), ms, client);
 					}
 					//modificacion del servicio.. toModify almacenara la id del servicio a modificar
-					else 
-						MySqlConnector.getInstance().editService(toModify, ms.getState(), ms.getNotes());
+					else {
+						ms.setExtId(toModify);
+						ms.setReferencia(ref.getText());
+						ms.setF_pago(pago.getSelectedIndex());
+						ms.setpNeta(Double.parseDouble(primaAnual.getText()));
+						ms.setCcc(ccc.getText());
+						ms.setCartera(cartera.isSelected());
+						ms.setAnualizar(anualizar.isSelected());
+						
+						MySqlConnector.getInstance().editService(ms);
+					}
 					
 					dispose();
 				}
@@ -394,7 +417,6 @@ public class ServiceDataCollector extends JDialog {
 					JOptionPane.showMessageDialog(null, "Error: \""+commission.getText()+"\" no es una cifra válida..", "Error", JOptionPane.ERROR_MESSAGE);
 			}
 		});
-		
 		pack();
 	}
 	
@@ -432,6 +454,13 @@ public class ServiceDataCollector extends JDialog {
 		dch.setDate(s.getDate());
 		expiryDch.setDate(s.getExpiryDate());
 		notes.setText(s.getNotes());
+		
+		ref.setText(s.getReferencia());
+		pago.setSelectedIndex(s.getF_pago());
+		primaAnual.setText(s.getPrima()+"");
+		ccc.setText(s.getCcc());
+		cartera.setSelected(s.isCartera());
+		anualizar.setSelected(s.isAnualizar());
 		
 		if (!App.user.isRoot())
 			commission.setEnabled(false); 

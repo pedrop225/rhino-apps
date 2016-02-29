@@ -261,24 +261,6 @@ public class MySqlConnector implements Connector {
 					cl.setBDate(new Date(jsonObj.getString("b_date").replace("-", "/")));
 					cl.setName(cipher.decode(jsonObj.getString("name")));
 					cl.setTlf_1(cipher.decode(jsonObj.getString("tlf_1")));
-		//			cl.setTlf_2(cipher.decode(jsonObj.getString("tlf_2")));
-		//			cl.setMail(cipher.decode(jsonObj.getString("mail")));
-	
-	/* ELEMENTOS NO NECESARIOS EN LA TABLA PRINCIPAL
-	 * NO SOLICITADOS A DB PARA AGILIZAR CARGA
-	 */
-	/*				cl.setDirTipoVia(cipher.decode(jsonObj.getString("tipo_via")));
-					cl.setDirNombreVia(cipher.decode(jsonObj.getString("nombre_via")));
-					cl.setDirNumero(cipher.decode(jsonObj.getString("numero")));
-					cl.setDirPortal(cipher.decode(jsonObj.getString("portal")));
-					cl.setDirEscalera(cipher.decode(jsonObj.getString("escalera")));
-					cl.setDirPiso(cipher.decode(jsonObj.getString("piso")));
-					cl.setDirPuerta(cipher.decode(jsonObj.getString("puerta")));
-					cl.setDirPoblacion(cipher.decode(jsonObj.getString("poblacion")));
-					cl.setDirMunicipio(cipher.decode(jsonObj.getString("municipio")));
-					cl.setDirCp(cipher.decode(jsonObj.getString("cp")));
-					
-					cl.setConsultancy(jsonObj.getInt("consultancy")); */
 					
 					r.add(cl);
 				}
@@ -383,7 +365,7 @@ public class MySqlConnector implements Connector {
 	    nameValuePairs.add(new BasicNameValuePair("expiry", formatter.format(s.getExpiryDate())));
 	    nameValuePairs.add(new BasicNameValuePair("state", s.getState()+""));
 	    nameValuePairs.add(new BasicNameValuePair("notes", cipher.encode(s.getNotes())));
-		
+	  
 		try {
 			getDataFromDB(App.external_path+"/db_add_service.php", nameValuePairs);
 		}
@@ -393,16 +375,22 @@ public class MySqlConnector implements Connector {
 	}
 
 	@Override
-	public void editService(int serviceId, int state, String notes) {
+	public void editService(Service s) {
 		ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-	    nameValuePairs.add(new BasicNameValuePair("id", serviceId+""));
-	    nameValuePairs.add(new BasicNameValuePair("state", state+""));
-	    nameValuePairs.add(new BasicNameValuePair("notes", cipher.encode(notes)));
-		
-		try {
+	    nameValuePairs.add(new BasicNameValuePair("id", s.getExtId()+""));
+	    nameValuePairs.add(new BasicNameValuePair("state", s.getState()+""));
+	    nameValuePairs.add(new BasicNameValuePair("notes", cipher.encode(s.getNotes())));
+	    nameValuePairs.add(new BasicNameValuePair("referencia", s.getReferencia()));
+	    nameValuePairs.add(new BasicNameValuePair("f_pago", s.getF_pago()+""));
+	    nameValuePairs.add(new BasicNameValuePair("p_neta", s.getPrima()+""));
+	    nameValuePairs.add(new BasicNameValuePair("ccc", cipher.encode(s.getCcc())));
+	    nameValuePairs.add(new BasicNameValuePair("cartera", s.isCartera()?"1":"0"));
+	    nameValuePairs.add(new BasicNameValuePair("anualizar", s.isAnualizar()?"1":"0"));
+	
+	    try {
 			getDataFromDB(App.external_path+"/db_edit_service.php", nameValuePairs);
 		}
-		catch (Exception e) {}
+		catch (Exception e) {e.printStackTrace();}
 	}
 	
 	@Override
@@ -437,7 +425,14 @@ public class MySqlConnector implements Connector {
 				s.setDate(new Date(jsonObj.getString("date").replace("-", "/")));
 				s.setExpiryDate(new Date(jsonObj.getString("expiry").replace("-", "/")));
 				s.setState(jsonObj.getInt("state"));
+				
 				s.setNotes(cipher.decode(jsonObj.getString("notes")));
+				s.setReferencia(jsonObj.getString("referencia"));
+				s.setF_pago(jsonObj.getInt("f_pago"));
+				s.setpNeta(jsonObj.getDouble("p_neta"));
+				s.setCcc(cipher.decode(jsonObj.getString("ccc")));
+				s.setCartera(jsonObj.getInt("cartera") > 0);
+				s.setAnualizar(jsonObj.getInt("anualizar") > 0);
 				
 				tr.add(s);
 			}
@@ -468,6 +463,13 @@ public class MySqlConnector implements Connector {
 				s.setExpiryDate(new Date(jsonObj.getString("expiry").replace("-", "/")));
 				s.setState(jsonObj.getInt("state"));
 				s.setNotes(cipher.decode(jsonObj.getString("notes")));
+				
+				s.setReferencia(jsonObj.getString("referencia"));
+				s.setF_pago(jsonObj.getInt("f_pago"));
+				s.setpNeta(jsonObj.getDouble("p_neta"));
+				s.setCcc(cipher.decode(jsonObj.getString("ccc")));
+				s.setCartera(jsonObj.getInt("cartera") > 0);
+				s.setAnualizar(jsonObj.getInt("anualizar") > 0);
 				
 				s.setId(new Dni(cipher.decode(jsonObj.getString("idClient"))));
 				s.setTitular(cipher.decode(jsonObj.getString("name")));
@@ -503,6 +505,13 @@ public class MySqlConnector implements Connector {
 				s.setExpiryDate(new Date(jsonObj.getString("expiry").replace("-", "/")));
 				s.setState(jsonObj.getInt("state"));
 				s.setNotes(cipher.decode(jsonObj.getString("notes")));
+				
+				s.setReferencia(jsonObj.getString("referencia"));
+				s.setF_pago(jsonObj.getInt("f_pago"));
+				s.setpNeta(jsonObj.getDouble("p_neta"));
+				s.setCcc(cipher.decode(jsonObj.getString("ccc")));
+				s.setCartera(jsonObj.getInt("cartera") > 0);
+				s.setAnualizar(jsonObj.getInt("anualizar") > 0);
 				
 				s.setId(new Dni(cipher.decode(jsonObj.getString("idClient"))));
 				s.setTitular(cipher.decode(jsonObj.getString("name")));

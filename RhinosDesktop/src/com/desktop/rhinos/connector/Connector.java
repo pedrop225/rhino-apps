@@ -31,7 +31,7 @@ public interface Connector {
 
 	public void deleteService(Service service);
 	
-	public void editService(int serviceId, int state, String notes);
+	public void editService(Service s);
 	
 	public void editServiceCommission(int serviceId, double commission);
 	

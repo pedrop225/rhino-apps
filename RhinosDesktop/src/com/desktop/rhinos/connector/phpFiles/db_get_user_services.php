@@ -4,10 +4,11 @@
 	mysql_connect($mysql_host, $mysql_user, $mysql_password);
 	mysql_select_db($mysql_database);
 	
-	$q = mysql_query("	SELECT Services.id, idClient, name, campaign, service, date, expiry, commission, state, notes
+	$q = mysql_query("	SELECT Services.id, idClient, name, campaign, service, date, expiry, commission, state, notes,
+								referencia, f_pago, p_neta, ccc, cartera, anualizar
 						FROM Clients, Services
-						WHERE idUser='".$_REQUEST['idUser']."' AND Clients.id=Services.idClient 
-						ORDER BY date");
+						WHERE (idUser='".$_REQUEST['idUser']."') AND (Clients.id=Services.idClient) AND
+						(YEAR(date) = YEAR(NOW()) AND MONTH(date) = MONTH(NOW()))");
 	
 	while ($e = mysql_fetch_assoc($q))
 		$output[] = $e;
