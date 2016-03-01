@@ -37,8 +37,8 @@ public class ReportDataCollector extends JPanel {
 	private JLabel lblSum;
 	
 	private User user;
-	float sum;
-	float primas;
+	double sum;
+	double primas;
 	int items;
 	private NumberFormat formatter = NumberFormat.getCurrencyInstance();
 	
@@ -134,14 +134,14 @@ public class ReportDataCollector extends JPanel {
 				tm.addRow(filterBackUp[backUpIndex] = o);
 				
 				int div = 0;
-				switch (div) {
+				switch (s.getF_pago()) {
 				case Service.ANUAL 		: div = 1; break;
 				case Service.SEMESTRAL	: div = 2; break;
 				case Service.TRIMESTRAL : div = 4; break;
 				case Service.BIMENSUAL 	: div = 6; break;
 				case Service.MENSUAL	: div = 12; break;
 				}
-				
+
 				primas += (s.isAnualizar() ? s.getPrima() : s.getPrima()/div) * ind;
 				sum += s.getCommission() * ind;
 				items += ind;
