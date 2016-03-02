@@ -161,7 +161,6 @@ public class ServiceDataCollector extends JDialog {
 		campaign = new JComboBox<Object>(importUserCampaigns().toArray());
 		service = new JComboBox<Service>();
 		commission = new CommissionEditor();
-		commission.setEnabled(false);
 
 		dch = new JDateChooser(new Date());
 		dch.setFont(App.DEFAULT_FONT);
@@ -258,6 +257,13 @@ public class ServiceDataCollector extends JDialog {
 		dataPanel2.add(ccc);
 		dataPanel2.add(cartera);
 		dataPanel2.add(anualizar);
+		
+		ref.setEnabled(false);
+		pago.setEnabled(false);
+		primaAnual.setEnabled(false);
+		ccc.setEnabled(false);
+		cartera.setEnabled(false);
+		anualizar.setEnabled(false);
 		
 		JPanel col_1 = new JPanel(new BorderLayout(10, 5));
 		JPanel col_2 = new JPanel(new BorderLayout(10, 5));
@@ -470,7 +476,14 @@ public class ServiceDataCollector extends JDialog {
 		dch.setEnabled(false);
 		expiryDch.setEnabled(false);
 		notes.setEditable(true);
-
+		ref.setEnabled(true);
+		pago.setEnabled(true);
+		primaAnual.setEnabled(true);
+		//CCC NOT AVAILABLE
+		//ccc.setEnabled(true);
+		cartera.setEnabled(true);
+		anualizar.setEnabled(true);
+		
 		uchooser.setFieldsEditable(false);
 		
 		btnDocs.setEnabled(true);
