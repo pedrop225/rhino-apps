@@ -40,7 +40,7 @@ public class ServiceTable extends RhTable {
 	private void init() {
         tm.addColumn("Campaña");
         tm.addColumn("Servicio");
-        tm.addColumn("Fecha");
+        tm.addColumn("Referencia");
         tm.addColumn("Vencimiento");
         tm.addColumn("Estado");
 
@@ -90,7 +90,7 @@ public class ServiceTable extends RhTable {
 		services = MySqlConnector.getInstance().getServices(clientId);
 		
 		for (Service s : services) {
-			Object [] o = {s.getCampaign(), s.getService(), new SimpleDateFormat("dd-MM-yyyy").format(s.getDate()),
+			Object [] o = {s.getCampaign(), s.getService(), s.getReferencia(),
 															new SimpleDateFormat("dd-MM-yyyy").format(s.getExpiryDate()),
 															Service.STATES[s.getState()]};
 			tm.addRow(o);

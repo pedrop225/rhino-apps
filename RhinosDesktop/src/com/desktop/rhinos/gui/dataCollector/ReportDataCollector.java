@@ -48,7 +48,10 @@ public class ReportDataCollector extends JPanel {
 	@SuppressWarnings("serial")
 	public ReportDataCollector() {
 		setLayout(new BorderLayout(0, 0));
-				
+		
+		/*
+		 * 	TABLA DE SERVICIOS
+		 * */
 		dateFilter = new DateFilter();
 		services = new ServiceTable("Nif", "Titular", "Importe") {
 			
@@ -127,7 +130,7 @@ public class ReportDataCollector extends JPanel {
 								formatter.format(s.getCommission() * ind),
 								s.getCampaign(),
 								s.getService(), 
-								new SimpleDateFormat("dd-MM-yyyy").format(s.getDate()),								 
+								s.getReferencia(),								 
 								new SimpleDateFormat("dd-MM-yyyy").format(s.getExpiryDate()),
 								Service.STATES[s.getState()]};
 				
