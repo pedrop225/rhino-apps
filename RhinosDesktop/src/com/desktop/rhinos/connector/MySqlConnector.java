@@ -41,7 +41,7 @@ import com.android.rhinos.gest.User;
 public class MySqlConnector implements Connector {
 
 	public static class App {
-		public static final String external_path = "http://www.pedroapv.net/services/rhino";
+		public static final String external_path = "http://localhost/services";
 		public static final User user = new User();
 		
 		public static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 11);
@@ -86,7 +86,7 @@ public class MySqlConnector implements Connector {
 	        	return true;
 	        }
 	    }
-	    catch (Exception e) {return false;}
+	    catch (Exception e) {e.printStackTrace();return false;}
         
         return false;
 	}
@@ -561,7 +561,7 @@ public class MySqlConnector implements Connector {
 	    
 	    JSONArray jsonArray = getDataFromDB(App.external_path+"/db_user_or_mail_exists.php", nameValuePairs);
 	    
-	    if (jsonArray == null) {
+	    if (jsonArray.length() == 0) {
 		    nameValuePairs.add(new BasicNameValuePair("name", cipher.encode(u.getName())));
 		    nameValuePairs.add(new BasicNameValuePair("password", cipher.encode(password)));
 	    	
@@ -961,14 +961,12 @@ public class MySqlConnector implements Connector {
             HttpResponse response = httpclient.execute(httppost);
             HttpEntity entity = response.getEntity();
             is = entity.getContent();
-
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
             StringBuilder sb = new StringBuilder();
             sb.append(reader.readLine());
 	        
             result = sb.toString();
             is.close();
-            
             return ((result.trim().length() > 0) ? new JSONArray(result) : new JSONArray());
 	    }
 	    catch (Exception e) {}

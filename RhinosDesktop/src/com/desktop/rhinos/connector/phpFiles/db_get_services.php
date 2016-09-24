@@ -1,18 +1,19 @@
 <?php
 	include 'db_settings.php';
 	
-	mysql_connect($mysql_host, $mysql_user, $mysql_password);
-	mysql_select_db($mysql_database);
+	$db = new PDO("mysql:host=$mysql_host;dbname=$mysql_database;charset=utf8mb4", $mysql_user, $mysql_password);
+	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	
-	$q = mysql_query("	SELECT *
+	$q = $db->prepare("	SELECT *
 						FROM Services
-						WHERE idClient ='".$_REQUEST['idClient']."' 
+						WHERE idClient = :idClient 
 						ORDER BY date");
 	
-	while ($e = mysql_fetch_assoc($q))
+	$q->bindParam(':idClient', $_REQUEST['idClient']);
+	$q->execute();
+	
+	while ($e = $q->fetch(PDO::FETCH_ASSOC))
 		$output[] = $e;
 	
 	print(json_encode($output));
-	
-	mysql_close();
 ?>

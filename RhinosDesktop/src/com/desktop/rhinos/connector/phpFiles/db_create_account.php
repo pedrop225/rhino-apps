@@ -1,27 +1,36 @@
 <?php
 	include 'db_settings.php';
 	
-	mysql_connect($mysql_host, $mysql_user, $mysql_password);
-	mysql_select_db($mysql_database);
+	$db = new PDO("mysql:host=$mysql_host;dbname=$mysql_database;charset=utf8mb4", $mysql_user, $mysql_password);
+	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+	//Insertando datos en tabla Login
+	$q = $db->prepare("	INSERT INTO Login (user, password) 
+						VALUES (:user, :password)");
 	
-	$q0 = mysql_query("	INSERT INTO Login (user, password) 
-						VALUES ('".$_REQUEST['user']."',
-								'".$_REQUEST['password']."')");
+	$q->bindParam(':user', $_REQUEST['user']);
+	$q->bindParam(':password', $_REQUEST['password']);
+	$q->execute();
+
+	//Comprobando el id adjudicado
+	$q = $db->prepare("SELECT id FROM Login
+						WHERE user = :user");
 	
-	$q1 = mysql_query("	SELECT id FROM Login
-						WHERE user='".$_REQUEST['user']."'");
+	$q->bindParam(':user', $_REQUEST['user']);
+	$q->execute();
 	
-	$row = mysql_fetch_array($q1);
+	$id = $q->fetch(PDO::FETCH_ASSOC)['id'];
 	
-	$q2 = mysql_query("	INSERT INTO Users (id, name, mail)
-						VALUES ('".$row['id']."',
-								'".$_REQUEST['name']."',
-								'".$_REQUEST['mail']."')");
+	//Insertando en tabla Usuarios con el id anterior
+	$q = $db->prepare("	INSERT INTO Users (id, name, mail)
+						VALUES (:id, :name, :mail)");
+	
+	$q->bindParam(':id', $id);
+	$q->bindParam(':name', $_REQUEST['name']);
+	$q->bindParam(':mail', $_REQUEST['mail']);
+	$q->execute();
 								
-	$q3 = mysql_query("	INSERT INTO Structure (parent, child, p_profit)
-						VALUES (1, 
-								'".$row['id']."',
-								0)");
-	
-	mysql_close();
+	$q = $db->prepare(" INSERT INTO Structure (parent, child, p_profit)
+						VALUES (1, $id, 0)");
+	$q->execute();
 ?>

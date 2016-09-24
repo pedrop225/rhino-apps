@@ -1,29 +1,44 @@
 <?php
 	include 'db_settings.php';
 	
-	mysql_connect($mysql_host, $mysql_user, $mysql_password);
-	mysql_select_db($mysql_database);
+	$db = new PDO("mysql:host=$mysql_host;dbname=$mysql_database;charset=utf8mb4", $mysql_user, $mysql_password);
+	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	
-	$q = mysql_query("	UPDATE Clients 
-								SET name='".$_REQUEST['name']."',
-								b_date = '".$_REQUEST['b_date']."',
-								tlf_1='".$_REQUEST['tlf_1']."',
-								tlf_2='".$_REQUEST['tlf_2']."',
-								mail='".$_REQUEST['mail']."',
-								consultancy='".$_REQUEST['consultancy']."'
-								WHERE (id='".$_REQUEST['id']."')");	
+	$q = $db->prepare("	UPDATE Clients 
+								SET name = :name, b_date = :b_date,
+								tlf_1 = :tlf_1, tlf_2 = :tlf_2,
+								mail = :mail, consultancy = :consultancy
+								WHERE id = :id");
+	
+	$q->bindParam(':name', $_REQUEST['name']);
+	$q->bindParam(':b_date', $_REQUEST['b_date']);
+	$q->bindParam(':tlf_1', $_REQUEST['tlf_1']);
+	$q->bindParam(':tlf_2', $_REQUEST['tlf_2']);
+	$q->bindParam(':mail', $_REQUEST['mail']);
+	$q->bindParam(':consultancy', $_REQUEST['consultancy']);
+	$q->bindParam(':id', $_REQUEST['id']);
+	
+	$q->execute();
 	
 	$q = mysql_query("	UPDATE Address
-								SET tipo_via='".$_REQUEST['tipo_via']."',
-								nombre_via='".$_REQUEST['nombre_via']."',
-								numero='".$_REQUEST['numero']."',
-								portal='".$_REQUEST['portal']."',
-								escalera='".$_REQUEST['escalera']."',
-								piso='".$_REQUEST['piso']."',
-								puerta='".$_REQUEST['puerta']."',
-								poblacion='".$_REQUEST['poblacion']."',
-								municipio='".$_REQUEST['municipio']."',
-								cp='".$_REQUEST['cp']."'
-								WHERE (id='".$_REQUEST['id']."')");	
-	mysql_close();
+								SET tipo_via = :tipo_via, nombre_via = :nombre_via,
+								numero = :numero, portal = :portal,
+								escalera = :escalera, piso = :piso,
+								puerta = :puerta, poblacion = :poblacion,
+								municipio = :municipio, cp = :cp
+								WHERE id = :id");	
+	
+	$q->bindParam(':tipo_via', $_REQUEST['tipo_via']);
+	$q->bindParam(':nombre_via', $_REQUEST['nombre_via']);
+	$q->bindParam(':numero', $_REQUEST['numero']);
+	$q->bindParam(':portal', $_REQUEST['portal']);
+	$q->bindParam(':escalera', $_REQUEST['escalera']);
+	$q->bindParam(':piso', $_REQUEST['piso']);
+	$q->bindParam(':puerta', $_REQUEST['puerta']);
+	$q->bindParam(':poblacion', $_REQUEST['poblacion']);
+	$q->bindParam(':municipio', $_REQUEST['municipio']);
+	$q->bindParam(':cp', $_REQUEST['cp']);
+	$q->bindParam(':id', $_REQUEST['id']);
+	
+	$q->execute();
 ?>

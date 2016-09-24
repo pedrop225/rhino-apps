@@ -1,18 +1,25 @@
 <?php
 	include 'db_settings.php';
 	
-	mysql_connect($mysql_host, $mysql_user, $mysql_password);
-	mysql_select_db($mysql_database);
+	$db = new PDO("mysql:host=$mysql_host;dbname=$mysql_database;charset=utf8mb4", $mysql_user, $mysql_password);
+	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	
-	$q = mysql_query("	UPDATE Services
-								SET state='".$_REQUEST['state']."',
-								notes='".$_REQUEST['notes']."',
-								referencia='".$_REQUEST['referencia']."',
-								f_pago='".$_REQUEST['f_pago']."',
-								p_neta='".$_REQUEST['p_neta']."',
-								ccc='".$_REQUEST['ccc']."',
-								cartera='".$_REQUEST['cartera']."',
-								anualizar='".$_REQUEST['anualizar']."'
-								WHERE (id='".$_REQUEST['id']."')");
-	mysql_close();
+	$q = $db->prepare("	UPDATE Services
+						SET state = :state, notes = :notes,
+							referencia = :referencia, f_pago = :f_pago,
+							p_neta = :p_neta, ccc = :ccc,
+							cartera = :cartera, anualizar = :anualizar
+							WHERE (id = :id)");
+	
+	$q->bindParam(':id', $_REQUEST['id']);
+	$q->bindParam(':state', $_REQUEST['state']);
+	$q->bindParam(':notes', $_REQUEST['notes']);
+	$q->bindParam(':referencia', $_REQUEST['referencia']);
+	$q->bindParam(':f_pago', $_REQUEST['f_pago']);
+	$q->bindParam(':p_neta', $_REQUEST['p_neta']);
+	$q->bindParam(':ccc', $_REQUEST['ccc']);
+	$q->bindParam(':cartera', $_REQUEST['cartera']);
+	$q->bindParam(':anualizar', $_REQUEST['anualizar']);
+	
+	$q->execute();
 ?>

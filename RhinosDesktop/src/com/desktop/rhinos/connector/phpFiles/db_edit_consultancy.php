@@ -1,15 +1,21 @@
 <?php
 	include 'db_settings.php';
 	
-	mysql_connect($mysql_host, $mysql_user, $mysql_password);
-	mysql_select_db($mysql_database);
+	$db = new PDO("mysql:host=$mysql_host;dbname=$mysql_database;charset=utf8mb4", $mysql_user, $mysql_password);
+	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	
-	$q = mysql_query("	UPDATE Consultancy
-								SET name='".$_REQUEST['name']."',
-								consultant='".$_REQUEST['consultant']."',
-								tlf_1='".$_REQUEST['tlf_1']."',
-								tlf_2='".$_REQUEST['tlf_2']."',
-								mail='".$_REQUEST['mail']."'
-								WHERE (id='".$_REQUEST['id']."')");	
-	mysql_close();
+	$q = $db->prepare("	UPDATE Consultancy
+						SET name = :name, consultant = :consultant,
+							tlf_1 = :tlf_1, tlf_2 = :tlf_2,
+							mail = :mail
+							WHERE id = :id");
+	
+	$q->bindParam(':id', $_REQUEST['id']);
+	$q->bindParam(':name', $_REQUEST['name']);
+	$q->bindParam(':consultant', $_REQUEST['consultant']);
+	$q->bindParam(':tlf_1', $_REQUEST['tlf_1']);
+	$q->bindParam(':tlf_2', $_REQUEST['tlf_2']);
+	$q->bindParam(':mail', $_REQUEST['mail']);
+	
+	$q->execute();
 ?>

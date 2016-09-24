@@ -1,14 +1,16 @@
 <?php
 	include 'db_settings.php';
 	
-	mysql_connect($mysql_host, $mysql_user, $mysql_password);
-	mysql_select_db($mysql_database);
+	$db = new PDO("mysql:host=$mysql_host;dbname=$mysql_database;charset=utf8mb4", $mysql_user, $mysql_password);
+	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	
-	$q = mysql_query("	INSERT INTO Documents (idService, name, date, doc)
-							VALUES(	'".$_REQUEST['idService']."',
-									'".$_REQUEST['name']."',
-									'".$_REQUEST['date']."',
-									'".$_REQUEST['doc']."')");
+	$q = $b->prepare("	INSERT INTO Documents (idService, name, date, doc)
+							VALUES(:idService, :name, :date, :doc)");
 	
-	mysql_close();
+	$q->bindParam(':idService', $_REQUEST['idService']);
+	$q->bindParam(':name ', $_REQUEST['name']);
+	$q->bindParam(':date', $_REQUEST['date']);
+	$q->bindParam(':doc', $_REQUEST['doc']);
+	
+	$q->execute();	
 ?>

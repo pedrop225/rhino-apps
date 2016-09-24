@@ -1,6 +1,6 @@
 <?php
-	$mysql_host = "pedroapvnet1.ipagemysql.com";
-	$mysql_database = "rhino_db";
-	$mysql_user = "apps";
-	$mysql_password = "8634331";
+	$mysql_host = "localhost";
+	$mysql_database = "backup";
+	$mysql_user = "root";
+	$mysql_password = "";
 ?>

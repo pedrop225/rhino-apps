@@ -1,12 +1,14 @@
 <?php
 	include 'db_settings.php';
 	
-	mysql_connect($mysql_host, $mysql_user, $mysql_password);
-	mysql_select_db($mysql_database);
+	$db = new PDO("mysql:host=$mysql_host;dbname=$mysql_database;charset=utf8mb4", $mysql_user, $mysql_password);
+	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	
-	$q = mysql_query("	UPDATE Login 
-						SET password = '".$_REQUEST['newpass']."'
-						WHERE user = '".$_REQUEST['user']."'");
-
-	mysql_close();
+	$q = $db->prepare("	UPDATE Login 
+						SET password = :newpass WHERE user = :user");
+	
+	$q->bindParam(':newpass', $_REQUEST['newpass']);
+	$q->bindParam(':user', $_REQUEST['user']);
+	
+	$q->execute();
 ?>

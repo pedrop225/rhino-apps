@@ -1,12 +1,15 @@
 <?php
 	include 'db_settings.php';
 	
-	mysql_connect($mysql_host, $mysql_user, $mysql_password);
-	mysql_select_db($mysql_database);
+	$db = new PDO("mysql:host=$mysql_host;dbname=$mysql_database;charset=utf8mb4", $mysql_user, $mysql_password);
+	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	
-	$q = mysql_query("	UPDATE Structure
-								SET parent='".$_REQUEST['parent']."',
-								p_profit='".$_REQUEST['p_profit']."'
-								WHERE (child='".$_REQUEST['child']."')");
-	mysql_close();
+	$q = $db->prepare("	UPDATE Structure
+						SET parent = :parent', p_profit = :p_profit
+							WHERE (child = :child)");
+	
+	$q->setParam(':parent', $_REQUEST['parent']);
+	$q->setParam(':p_profit', $_REQUEST['p_profit']);
+	$q->setParam(':child', $_REQUEST['child']);
+	$q->execute();
 ?>

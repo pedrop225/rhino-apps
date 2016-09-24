@@ -1,12 +1,18 @@
 <?php
 	include 'db_settings.php';
 	
-	mysql_connect($mysql_host, $mysql_user, $mysql_password);
-	mysql_select_db($mysql_database);
+	$db = new PDO("mysql:host=$mysql_host;dbname=$mysql_database;charset=utf8mb4", $mysql_user, $mysql_password);
+	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	
-	$q = mysql_query("DELETE FROM Services WHERE idClient='".$_REQUEST['id']."'");
-	$q = mysql_query("DELETE FROM Clients WHERE id='".$_REQUEST['id']."'");
-	$q = mysql_query("DELETE FROM Address WHERE id='".$_REQUEST['id']."'");
-
-	mysql_close();
+	$q = $db->prepare("DELETE FROM Services WHERE idClient=:id");
+	$q->bindParm(':id', $_REQUEST['id']);
+	$q->execute();
+	
+	$q = mysql_query("DELETE FROM Clients WHERE id=:id");
+	$q->bindParm(':id', $_REQUEST['id']);
+	$q->execute();
+	
+	$q = mysql_query("DELETE FROM Address WHERE id=:id");
+	$q->bindParm(':id', $_REQUEST['id']);
+	$q->execute();
 ?>

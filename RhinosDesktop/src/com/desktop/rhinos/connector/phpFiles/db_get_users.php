@@ -1,16 +1,16 @@
 <?php
 	include 'db_settings.php';
 	
-	mysql_connect($mysql_host, $mysql_user, $mysql_password);
-	mysql_select_db($mysql_database);
+	$db = new PDO("mysql:host=$mysql_host;dbname=$mysql_database;charset=utf8mb4", $mysql_user, $mysql_password);
+	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	
-	$q = mysql_query("	SELECT id, type, user, name, mail
+	$q = $db->prepare("	SELECT id, type, user, name, mail
 						FROM Login NATURAL JOIN Users ");
 	
-	while ($e = mysql_fetch_assoc($q))
+	$q->execute();
+	
+	while ($e = $q->fetch(PDO::FETCH_ASSOC))
 		$output[] = $e;
 
 	print(json_encode($output));
-	
-	mysql_close();
 ?>

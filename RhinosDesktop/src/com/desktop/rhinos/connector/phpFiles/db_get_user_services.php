@@ -1,19 +1,22 @@
 <?php
 	include 'db_settings.php';
 	
-	mysql_connect($mysql_host, $mysql_user, $mysql_password);
-	mysql_select_db($mysql_database);
+	$db = new PDO("mysql:host=$mysql_host;dbname=$mysql_database;charset=utf8mb4", $mysql_user, $mysql_password);
+	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	
-	$q = mysql_query("	SELECT Services.id, idClient, name, campaign, service, date, expiry, commission, state, notes,
+	$q = $db->prepare("	SELECT Services.id, idClient, name, campaign, service, date, expiry, commission, state, notes,
 								referencia, f_pago, p_neta, ccc, cartera, anualizar
 						FROM Clients, Services
-						WHERE (idUser='".$_REQUEST['idUser']."') AND (Clients.id=Services.idClient) AND
-						(YEAR(date) = YEAR(NOW()) AND MONTH(date) = MONTH(NOW()))");
+						WHERE 	(idUser = :idUser) AND
+								(Clients.id = Services.idClient) AND
+								((state = 1 AND cartera = 1) OR (YEAR(date) = YEAR(NOW()))) AND
+								(MONTH(date) = MONTH(DATE_ADD(NOW(), INTERVAL 7 DAY)))");
 	
-	while ($e = mysql_fetch_assoc($q))
+	$q->bindParam(':idUser', $_REQUEST['idUser']);
+	$q->execute();
+	
+	while ($e = $q->fetch(PDO::FETCH_ASSOC))
 		$output[] = $e;
 	
 	print(json_encode($output));
-	
-	mysql_close();
 ?>
