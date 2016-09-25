@@ -1,18 +1,36 @@
 <?php
-	class ROperations {
+	
+	class Server {
 		
-		private $mysql_host = "mysql14.000webhost.com";
-		private $mysql_database = "a6294139_db";
-		private $mysql_user = "a6294139_user";
-		private $mysql_password = "456123a";
+		private $pdo;
 		
-		function login($user, $password) {
-			$db = new mysqli($mysql_host, $mysql_user, $mysql_password, $mysql_database);	
+		//constructor
+		public function Server() {
+			
+			include 'db_settings.php';
+				
+			$this->pdo = new PDO("mysql:host=$mysql_host;dbname=$mysql_database;charset=utf8mb4", $mysql_user, $mysql_password);
+			$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		}
+		
+		public function login() {
+			
+			$q = $this->pdo->prepare('SELECT * FROM Clients');
+			$q->execute();
+				
+			return $this->create_json($q);
+		}
+		
+		private function create_json($q) {
+			
+			while ($e = $q->fetch(PDO::FETCH_ASSOC))
+				$result[] = $e;
+			
+			return json_encode($result);
 		}
 	}
 	
-	$options = array("uri"=>"http://www.pedroapv.com/rhino/ws/");
-	$server = new SoapServer(NULL, $options);
-	$server->setClass("ROperations");
+	$server = new SoapServer(null, array('uri'=>'http://localhost/services/'));
+	$server->setClass("Server");
 	$server->handle();
 ?>
