@@ -364,12 +364,13 @@ public class MySqlConnector implements Connector {
 	    nameValuePairs.add(new BasicNameValuePair("date", formatter.format(s.getDate())));
 	    nameValuePairs.add(new BasicNameValuePair("expiry", formatter.format(s.getExpiryDate())));
 	    nameValuePairs.add(new BasicNameValuePair("state", s.getState()+""));
-	    nameValuePairs.add(new BasicNameValuePair("notes", cipher.encode(s.getNotes())));
+	    nameValuePairs.add(new BasicNameValuePair("ccc", cipher.encode("")));
+	    nameValuePairs.add(new BasicNameValuePair("notes", cipher.encode("")));
 	  
 		try {
 			getDataFromDB(App.external_path+"/db_add_service.php", nameValuePairs);
 		}
-		catch (Exception e) {tr = false;}
+		catch (Exception e) {e.printStackTrace(); tr = false;}
 		
 		return tr;
 	}
