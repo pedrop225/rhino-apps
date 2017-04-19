@@ -41,7 +41,7 @@ import com.android.rhinos.gest.User;
 public class MySqlConnector implements Connector {
 
 	public static class App {
-		public static final String external_path = "http://localhost/services";
+		public static final String external_path = "http://localhost:8080/services";
 		public static final User user = new User();
 		
 		public static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 11);
@@ -86,7 +86,7 @@ public class MySqlConnector implements Connector {
 	        	return true;
 	        }
 	    }
-	    catch (Exception e) {e.printStackTrace();return false;}
+	    catch (Exception e) {return false;}
         
         return false;
 	}
