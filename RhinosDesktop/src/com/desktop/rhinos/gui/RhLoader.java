@@ -11,7 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
-import com.desktop.rhinos.connector.MySqlConnector.App;
+import com.desktop.rhinos.connector.Connector.App;
 
 public class RhLoader extends JFrame {
 	

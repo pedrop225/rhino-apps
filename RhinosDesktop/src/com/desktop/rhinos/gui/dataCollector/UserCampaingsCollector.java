@@ -10,8 +10,8 @@ import javax.swing.JPanel;
 
 import com.android.rhinos.gest.Campaign;
 import com.android.rhinos.gest.User;
+import com.desktop.rhinos.connector.Connector.App;
 import com.desktop.rhinos.connector.MySqlConnector;
-import com.desktop.rhinos.connector.MySqlConnector.App;
 import com.desktop.rhinos.gui.dataCollector.interfaces.UserDisplay;
 
 @SuppressWarnings("serial")
@@ -28,7 +28,7 @@ public class UserCampaingsCollector extends JPanel implements UserDisplay {
 		
 		checkCamps = new ArrayList<JCheckBox>();
 				
-		ArrayList<Campaign> allCamps = MySqlConnector.getInstance().getCampaigns(App.user);
+		ArrayList<Campaign> allCamps = MySqlConnector.getInstance().getCampaigns(App.USER);
 		for (Campaign i : allCamps) {
 			JCheckBox cb = new JCheckBox(i.getName());
 			

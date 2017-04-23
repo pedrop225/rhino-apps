@@ -11,7 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import com.android.rhinos.gest.User;
-import com.desktop.rhinos.connector.MySqlConnector;
+import com.desktop.rhinos.connector.Connector.App;
 import com.desktop.rhinos.gui.dataCollector.UserDataCollector;
 
 public class AddAccount extends JDialog {
@@ -44,7 +44,7 @@ public class AddAccount extends JDialog {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				u = dc.getUser();
-				MySqlConnector.getInstance().createAccount(u, "_0x"+u.getUser().toLowerCase()+"_", dc.isSendMailSelected());
+				App.CONNECTOR.createAccount(u, "_0x"+u.getUser().toLowerCase()+"_", dc.isSendMailSelected());
 				dispose();
 			}
 		});

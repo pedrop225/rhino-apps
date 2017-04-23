@@ -21,8 +21,8 @@ import javax.swing.border.EmptyBorder;
 
 import com.android.rhinos.gest.Campaign;
 import com.android.rhinos.gest.Service;
+import com.desktop.rhinos.connector.Connector.App;
 import com.desktop.rhinos.connector.MySqlConnector;
-import com.desktop.rhinos.connector.MySqlConnector.App;
 import com.desktop.rhinos.structures.tree.RhTree;
 
 @SuppressWarnings("serial")
@@ -114,7 +114,7 @@ public class CampaignsUpdater extends JDialog {
 		tModel.setRoot("Campañas");
 		tree = new JTree(tModel.getRoot());
 		
-		ArrayList<Campaign> campaigns = MySqlConnector.getInstance().getCampaigns(App.user);
+		ArrayList<Campaign> campaigns = MySqlConnector.getInstance().getCampaigns(App.USER);
 		
 		for (Campaign camp : campaigns) {
 			tModel.add(tModel.getRoot().getData(), camp.toString());

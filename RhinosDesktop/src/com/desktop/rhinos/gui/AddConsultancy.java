@@ -10,8 +10,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.desktop.rhinos.connector.MySqlConnector;
-import com.desktop.rhinos.connector.MySqlConnector.App;
+import com.desktop.rhinos.connector.Connector.App;
 import com.desktop.rhinos.gui.dataCollector.ConsultancyDataCollector;
 
 public class AddConsultancy extends JDialog {
@@ -41,7 +40,7 @@ public class AddConsultancy extends JDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				MySqlConnector.getInstance().addConsultancy(dc.getConsultancy());
+				App.CONNECTOR.addConsultancy(dc.getConsultancy());
 				dispose();
 			}
 		});

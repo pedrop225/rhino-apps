@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.border.EmptyBorder;
 
-import com.desktop.rhinos.connector.MySqlConnector.App;
+import com.desktop.rhinos.connector.Connector.App;
 import com.desktop.rhinos.gui.Util;
 import com.toedter.calendar.JCalendar;
 

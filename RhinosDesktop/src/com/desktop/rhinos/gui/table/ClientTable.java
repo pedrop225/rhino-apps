@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 import com.android.rhinos.gest.Client;
+import com.desktop.rhinos.connector.Connector.App;
 import com.desktop.rhinos.connector.MySqlConnector;
-import com.desktop.rhinos.connector.MySqlConnector.App;
 import com.desktop.rhinos.gui.AddContract;
 
 public class ClientTable extends RhTable {
@@ -53,7 +53,7 @@ public class ClientTable extends RhTable {
 	public void updateTableData() {
 		tm.setRowCount(0);
 		
-		ArrayList<Client> ac = MySqlConnector.getInstance().getClients(App.user);
+		ArrayList<Client> ac = MySqlConnector.getInstance().getClients(App.USER);
 		filterBackUp = new Object[ac.size()][];
 		
 		for (int i = 0; i < ac.size(); i++) {

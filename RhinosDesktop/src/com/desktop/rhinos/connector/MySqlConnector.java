@@ -1,7 +1,5 @@
 package com.desktop.rhinos.connector;
 
-import java.awt.Color;
-import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Vector;
 
 import javax.crypto.SecretKey;
 
@@ -39,19 +38,14 @@ import com.android.rhinos.gest.Service;
 import com.android.rhinos.gest.User;
 
 public class MySqlConnector implements Connector {
-
-	public static class App {
-		public static final String external_path = "http://localhost:8080/services";
-		public static final User user = new User();
 		
-		public static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 11);
-		public static final Color LIGHT_GREEN = new Color(57, 134, 90, 40);
-		public static final Color APP_GREEN = new Color(57, 134, 90);
-	}
-	
 	private RCipher cipher;
-	private SimpleDateFormat formatter;
-	private static MySqlConnector INSTANCE = new MySqlConnector();
+	private SimpleDateFormat formatter; 
+	private static MySqlConnector INSTANCE;
+	
+	public synchronized static MySqlConnector getInstance() {
+		return (INSTANCE != null) ? INSTANCE : new MySqlConnector();
+	}
 	
 	private MySqlConnector() {
 		
@@ -64,10 +58,6 @@ public class MySqlConnector implements Connector {
 		catch (Exception e) {e.getStackTrace();}
 	}
 	
-	public synchronized static MySqlConnector getInstance() {
-		return INSTANCE;
-	}
-	
 	public boolean login(String user, String password) {
 
 	    //the mail data to send
@@ -78,11 +68,11 @@ public class MySqlConnector implements Connector {
 	        JSONArray jsonArray = getDataFromDB(App.external_path+"/db_login.php", nameValuePairs);
 	        JSONObject jsonObj = jsonArray.getJSONObject(0);
 	        if (cipher.decode(jsonObj.getString("password")).equals(password)) {
-	        	App.user.setExtId(jsonObj.getInt("id"));
-	        	App.user.setType(jsonObj.getInt("type"));
-	        	App.user.setUser(user);
-	        	App.user.setName(cipher.decode(jsonObj.getString("name")));
-	        	App.user.setMail(cipher.decode(jsonObj.getString("mail")));
+	        	App.USER.setExtId(jsonObj.getInt("id"));
+	        	App.USER.setType(jsonObj.getInt("type"));
+	        	App.USER.setUser(user);
+	        	App.USER.setName(cipher.decode(jsonObj.getString("name")));
+	        	App.USER.setMail(cipher.decode(jsonObj.getString("mail")));
 	        	return true;
 	        }
 	    }
@@ -973,5 +963,45 @@ public class MySqlConnector implements Connector {
 	    catch (Exception e) {}
 	    
 		return new JSONArray();
+	}
+	
+	//MIGRATE
+	
+	@Override
+	public ArrayList<ArrayList<String>> getLoginTable() {
+		ArrayList<ArrayList<String>> tr = new ArrayList<ArrayList<String>>();
+		
+	    ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+	    nameValuePairs.add(new BasicNameValuePair("table", "login"));
+	   
+    	System.out.println("hello");
+
+	    JSONArray jsonArray = getDataFromDB(App.external_path+"/migrate/db_export.php", nameValuePairs);
+	    
+	    System.out.println(jsonArray.length());
+	    try {
+		    for (int i = 0; i < jsonArray.length(); i++) {
+		    	JSONObject jsonObj = jsonArray.getJSONObject(i);
+		    	
+		    }
+	    }
+		catch (Exception e ){e.printStackTrace();}
+	    return tr;
+	}
+	
+	@Override
+	public void getUsersTable() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void setLoginTable(ArrayList<ArrayList<String>> log) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void setUsersTable() {
+		// TODO Auto-generated method stub
+		
 	}
 }

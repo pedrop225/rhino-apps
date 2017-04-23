@@ -18,8 +18,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import com.android.rhinos.gest.Service;
+import com.desktop.rhinos.connector.Connector.App;
 import com.desktop.rhinos.connector.MySqlConnector;
-import com.desktop.rhinos.connector.MySqlConnector.App;
 import com.desktop.rhinos.gui.dataCollector.ReportDataCollector;
 import com.desktop.rhinos.gui.table.ClientTable;
 import com.desktop.rhinos.gui.table.ConsultancyTable;
@@ -63,7 +63,7 @@ public class RhPanel extends JPanel {
 				tm.setRowCount(0);
 				services.clear();
 				
-				ArrayList<Service> as = MySqlConnector.getInstance().getUserServices(App.user);
+				ArrayList<Service> as = MySqlConnector.getInstance().getUserServices(App.USER);
 				filterBackUp = new Object[as.size()][];
 
 				for (int i = 0; i < as.size(); i++) {
@@ -125,7 +125,7 @@ public class RhPanel extends JPanel {
 	
 	private JPanel getUserBanner() {
 		final JPanel b = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		JLabel l = new JLabel((App.user.getName() != null) ? App.user.getName()+"  " : "", JLabel.RIGHT);
+		JLabel l = new JLabel((App.USER.getName() != null) ? App.USER.getName()+"  " : "", JLabel.RIGHT);
 		
 		Font f = new Font(Font.MONOSPACED, Font.BOLD, 16);
 		l.setFont(f);
@@ -141,7 +141,7 @@ public class RhPanel extends JPanel {
 				
 				if (e.getClickCount() == 2) {
 					final UserHierarchyDialog uch = new UserHierarchyDialog();
-					uch.setUser(App.user);
+					uch.setUser(App.USER);
 					uch.setVisible(true);
 				}
 			}

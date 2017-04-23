@@ -1,5 +1,7 @@
 package com.desktop.rhinos.connector;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -11,6 +13,17 @@ import com.android.rhinos.gest.User;
 
 public interface Connector {
 
+	public static class App {
+		
+		public static final String external_path = "http://localhost/services";
+		public static Connector CONNECTOR = DerbyConnector.getInstance();
+		public static final User USER = new User();
+		
+		public static final Font DEFAULT_FONT = new Font(Font.MONOSPACED, Font.PLAIN, 11);
+		public static final Color LIGHT_GREEN = new Color(57, 134, 90, 40);
+		public static final Color APP_GREEN = new Color(57, 134, 90);
+	}
+		
 	public boolean login(String user, String password);
 	
 	public void clearCampaigns();
@@ -72,4 +85,14 @@ public interface Connector {
 	public void editUserParent(int extId, int idParent, double comm);
 	
 	public ArrayList<ArrayList<User>> getUserStructure(User user);
+
+	public boolean addConsultancy(Consultancy consultancy);
+	
+	//import tools
+	
+	public void setLoginTable(ArrayList<ArrayList<String>> log);
+	public ArrayList<ArrayList<String>> getLoginTable();
+	
+	public void setUsersTable();
+	public void getUsersTable();
 }

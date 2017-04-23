@@ -16,7 +16,7 @@ import com.android.rhinos.gest.Cif;
 import com.android.rhinos.gest.Client;
 import com.android.rhinos.gest.Dni;
 import com.android.rhinos.gest.Nie;
-import com.desktop.rhinos.connector.MySqlConnector.App;
+import com.desktop.rhinos.connector.Connector.App;
 import com.desktop.rhinos.gui.AddContract;
 import com.desktop.rhinos.gui.Util;
 import com.toedter.calendar.JDateChooser;

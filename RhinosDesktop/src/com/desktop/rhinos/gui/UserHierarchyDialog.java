@@ -14,7 +14,7 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import com.android.rhinos.gest.User;
-import com.desktop.rhinos.connector.MySqlConnector.App;
+import com.desktop.rhinos.connector.Connector.App;
 
 @SuppressWarnings("serial")
 public class UserHierarchyDialog extends JDialog {

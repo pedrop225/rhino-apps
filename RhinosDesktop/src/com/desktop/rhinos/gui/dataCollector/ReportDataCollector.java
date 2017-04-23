@@ -18,8 +18,8 @@ import javax.swing.JRadioButton;
 
 import com.android.rhinos.gest.Service;
 import com.android.rhinos.gest.User;
+import com.desktop.rhinos.connector.Connector.App;
 import com.desktop.rhinos.connector.MySqlConnector;
-import com.desktop.rhinos.connector.MySqlConnector.App;
 import com.desktop.rhinos.gui.table.ServiceTable;
 import com.itextpdf.text.Font;
 
@@ -66,7 +66,7 @@ public class ReportDataCollector extends JPanel {
 
 				user = userChooser.getSelectedUser();
 				if (user == null)
-					user = App.user;
+					user = App.USER;
 				
 				int date_type = dateFilter.getDateType();
 				ArrayList<Service> as = MySqlConnector.getInstance().getUserServicesByDate(user, dateFilter.getInitialDate(), 

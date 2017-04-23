@@ -5,6 +5,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -12,12 +13,11 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
 import com.android.rhinos.gest.User;
+import com.desktop.rhinos.connector.Connector.App;
 import com.desktop.rhinos.connector.MySqlConnector;
-import com.desktop.rhinos.connector.MySqlConnector.App;
 import com.desktop.rhinos.gui.AddContract;
 import com.desktop.rhinos.gui.Util;
 import com.desktop.rhinos.gui.dataCollector.interfaces.UserDisplay;
-import javax.swing.JCheckBox;
 
 public class UserDataCollector extends JPanel implements UserDisplay {
 	

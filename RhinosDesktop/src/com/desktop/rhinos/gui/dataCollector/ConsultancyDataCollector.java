@@ -12,8 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.android.rhinos.gest.Consultancy;
+import com.desktop.rhinos.connector.Connector.App;
 import com.desktop.rhinos.connector.MySqlConnector;
-import com.desktop.rhinos.connector.MySqlConnector.App;
 import com.desktop.rhinos.gui.AddContract;
 import com.desktop.rhinos.gui.Util;
 import com.desktop.rhinos.gui.table.ConsultancyTableDialog;

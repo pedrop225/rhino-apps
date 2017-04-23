@@ -26,7 +26,7 @@ import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import com.desktop.rhinos.connector.MySqlConnector.App;
+import com.desktop.rhinos.connector.Connector.App;
 import com.desktop.rhinos.gui.Util;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Font;
@@ -227,14 +227,14 @@ public abstract class RhTable extends JPanel {
 			
 			Phrase p1 = new Phrase(getPrintableTitle(), new Font(Font.FontFamily.UNDEFINED, 24, Font.BOLD));
 			Phrase p2   = new Phrase("Nombre:  ", bf);
-			Phrase p2_0 = new Phrase(App.user.getName(), nf);
+			Phrase p2_0 = new Phrase(App.USER.getName(), nf);
 		
 			Paragraph parag = new Paragraph();
 			parag.add(p2);
 			parag.add(p2_0);
 			
 			Phrase p3   = new Phrase("E-mail:  ", bf);
-			Phrase p3_0 = new Phrase(App.user.getMail(), nf);
+			Phrase p3_0 = new Phrase(App.USER.getMail(), nf);
 		
 			Paragraph parag_0 = new Paragraph();
 			parag_0.add(p3);

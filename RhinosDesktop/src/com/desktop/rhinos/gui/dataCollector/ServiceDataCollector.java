@@ -38,8 +38,8 @@ import com.android.rhinos.gest.Client;
 import com.android.rhinos.gest.Dni;
 import com.android.rhinos.gest.Service;
 import com.android.rhinos.gest.User;
+import com.desktop.rhinos.connector.Connector.App;
 import com.desktop.rhinos.connector.MySqlConnector;
-import com.desktop.rhinos.connector.MySqlConnector.App;
 import com.desktop.rhinos.gui.DocumentsDialog;
 import com.desktop.rhinos.gui.Util;
 import com.toedter.calendar.JDateChooser;
@@ -392,7 +392,7 @@ public class ServiceDataCollector extends JDialog {
 					ms.setState(state.getSelectedIndex());
 					ms.setNotes(notes.getText().trim().toUpperCase());
 					
-					if ((ms.getCommission() == -1) || (App.user.isRoot()))
+					if ((ms.getCommission() == -1) || (App.USER.isRoot()))
 						ms.setCommission(Double.parseDouble(commission.getText()));
 					
 					//toModify < 0 siempre que se inserte un servicio por primera vez
@@ -400,7 +400,7 @@ public class ServiceDataCollector extends JDialog {
 						User user = uchooser.getSelectedUser();
 						/* si no hay usuario seleccionado se toma el usuario actual*/
 						if (user == null)
-							user = App.user;
+							user = App.USER;
 						
 						MySqlConnector.getInstance().addService(user.getExtId(), ms, client);
 					}
@@ -468,7 +468,7 @@ public class ServiceDataCollector extends JDialog {
 		cartera.setSelected(s.isCartera());
 		anualizar.setSelected(s.isAnualizar());
 		
-		if (!App.user.isRoot())
+		if (!App.USER.isRoot())
 			commission.setEnabled(false); 
 		
 		campaign.setEnabled(false);
@@ -505,7 +505,7 @@ public class ServiceDataCollector extends JDialog {
 	}
 	
 	private ArrayList<Campaign> importUserCampaigns() {
-		return MySqlConnector.getInstance().getCampaigns(App.user);
+		return MySqlConnector.getInstance().getCampaigns(App.USER);
 	}
 	
 	private void updateServices() {

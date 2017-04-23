@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -12,10 +14,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 
+import com.desktop.rhinos.connector.Connector.App;
 import com.desktop.rhinos.connector.MySqlConnector;
-import com.desktop.rhinos.connector.MySqlConnector.App;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class ChangePassword extends JDialog {
 	
@@ -80,10 +80,10 @@ public class ChangePassword extends JDialog {
 		btnNewButton.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
-				if (MySqlConnector.getInstance().login(App.user.getUser(), new String(textField.getPassword())) &&
+				if (MySqlConnector.getInstance().login(App.USER.getUser(), new String(textField.getPassword())) &&
 					new String(textField_1.getPassword()).trim().equals(new String(textField_2.getPassword()).trim())) {
 					
-					MySqlConnector.getInstance().changePassword(App.user.getUser(), new String(textField_1.getPassword()).trim());
+					MySqlConnector.getInstance().changePassword(App.USER.getUser(), new String(textField_1.getPassword()).trim());
 					
 					_this.setVisible(false);
 				}

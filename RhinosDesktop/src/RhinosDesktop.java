@@ -5,7 +5,7 @@ import com.desktop.rhinos.gui.RhFrame;
 import com.desktop.rhinos.gui.RhLoader;
 
 public class RhinosDesktop {
-
+	
 	public static void main(String[] args) {
 		
 		RhLoader load = new RhLoader();

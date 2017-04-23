@@ -16,8 +16,8 @@ import javax.swing.JSeparator;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
+import com.desktop.rhinos.connector.Connector.App;
 import com.desktop.rhinos.connector.MySqlConnector;
-import com.desktop.rhinos.connector.MySqlConnector.App;
 import com.desktop.rhinos.gui.dataCollector.AccountNumberCollector;
 import com.desktop.rhinos.gui.table.ConsultancyTableDialog;
 import com.desktop.rhinos.gui.table.UserTableDialog;
@@ -251,7 +251,7 @@ public class RhFrame extends JFrame {
 	 * Comprueba los permisos para el usuario que accede al sistema.
 	 * */
 	private void chechUserType() {
-		boolean r = App.user.isRoot();
+		boolean r = App.USER.isRoot();
 		
 		//ocultando menus para usuarios NO root
 		edConsultancy.setVisible(r);
@@ -300,7 +300,7 @@ public class RhFrame extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				App.user.clear();
+				App.USER.clear();
 				rhPanel.clear();
 				log.setVisible(true);
 			}

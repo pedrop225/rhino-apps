@@ -26,7 +26,7 @@ import com.android.rhinos.gest.Client;
 import com.android.rhinos.gest.Dni;
 import com.android.rhinos.gest.Id;
 import com.android.rhinos.gest.Nie;
-import com.desktop.rhinos.connector.MySqlConnector;
+import com.desktop.rhinos.connector.Connector.App;
 import com.desktop.rhinos.gui.dataCollector.ClientDataCollector;
 import com.desktop.rhinos.gui.dataCollector.ConsultancyDataCollector;
 import com.desktop.rhinos.gui.table.ServiceTable;
@@ -135,9 +135,9 @@ public class AddContract extends JFrame {
 					Client c = cliData.getClient();
 					c.setConsultancy(conData.getConsultancy().getExtId());
 					if (editMode)
-						MySqlConnector.getInstance().editClient(c);
+						App.CONNECTOR.editClient(c);
 					else
-						MySqlConnector.getInstance().addClient(c);
+						App.CONNECTOR.addClient(c);
 					
 					dispose();
 				}
@@ -170,7 +170,7 @@ public class AddContract extends JFrame {
 		cliData.getNif().setForeground((v) ? Color.GREEN.darker().darker() : Color.RED);
 		
 		if (v) {
-			Client c = MySqlConnector.getInstance().clientExists(id.toString());
+			Client c = App.CONNECTOR.clientExists(id.toString());
 			if (c != null) {
 				prepareContract(c);
 			}
@@ -196,8 +196,7 @@ public class AddContract extends JFrame {
 	}
 	
 	private void prepareContract(String id) {
-		MySqlConnector con =  MySqlConnector.getInstance();
-		Client c = con.clientExists(id);
+		Client c = App.CONNECTOR.clientExists(id);
 		
 		if (c.getConsultancy() != -1)
 			conData.setData(c.getConsultancy());

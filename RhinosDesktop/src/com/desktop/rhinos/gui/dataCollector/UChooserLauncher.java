@@ -7,7 +7,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import com.android.rhinos.gest.User;
-import com.desktop.rhinos.connector.MySqlConnector.App;
+import com.desktop.rhinos.connector.Connector.App;
 import com.desktop.rhinos.gui.UserHierarchyDialog;
 
 @SuppressWarnings("serial")
@@ -23,7 +23,7 @@ class UChooserLauncher extends ChooserLauncher {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				uhd = new UserHierarchyDialog();
-				uhd.setUser(App.user);
+				uhd.setUser(App.USER);
 				uhd.setVisible(true);
 				
 				new Thread() {

@@ -9,8 +9,8 @@ import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 
 import com.android.rhinos.gest.User;
+import com.desktop.rhinos.connector.Connector.App;
 import com.desktop.rhinos.connector.MySqlConnector;
-import com.desktop.rhinos.connector.MySqlConnector.App;
 import com.desktop.rhinos.structures.tree.RhNode;
 import com.desktop.rhinos.structures.tree.RhTree;
 
