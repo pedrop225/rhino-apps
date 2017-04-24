@@ -11,7 +11,6 @@ import javax.swing.JPanel;
 import com.android.rhinos.gest.Campaign;
 import com.android.rhinos.gest.User;
 import com.desktop.rhinos.connector.Connector.App;
-import com.desktop.rhinos.connector.MySqlConnector;
 import com.desktop.rhinos.gui.dataCollector.interfaces.UserDisplay;
 
 @SuppressWarnings("serial")
@@ -28,7 +27,7 @@ public class UserCampaingsCollector extends JPanel implements UserDisplay {
 		
 		checkCamps = new ArrayList<JCheckBox>();
 				
-		ArrayList<Campaign> allCamps = MySqlConnector.getInstance().getCampaigns(App.USER);
+		ArrayList<Campaign> allCamps = App.CONNECTOR.getCampaigns(App.USER);
 		for (Campaign i : allCamps) {
 			JCheckBox cb = new JCheckBox(i.getName());
 			
@@ -39,10 +38,10 @@ public class UserCampaingsCollector extends JPanel implements UserDisplay {
 					Campaign c = new Campaign(((JCheckBox)e.getSource()).getText());
 					
 					if (((JCheckBox)e.getSource()).isSelected())
-						MySqlConnector.getInstance().grantCampaignPermission(user, c);
+						App.CONNECTOR.grantCampaignPermission(user, c);
 					
 					else
-						MySqlConnector.getInstance().removeCampaingPermission(user, c);
+						App.CONNECTOR.removeCampaingPermission(user, c);
 				}
 			});
 			
@@ -54,7 +53,7 @@ public class UserCampaingsCollector extends JPanel implements UserDisplay {
 	@Override
 	public void setData(User u) {
 		user = u;
-		ArrayList<String> authCamps = MySqlConnector.getInstance().getAuthorizedCampaigns(user);
+		ArrayList<String> authCamps = App.CONNECTOR.getAuthorizedCampaigns(user);
 		for (JCheckBox i : checkCamps)
 			i.setSelected(authCamps.contains(i.getText()));
 	}

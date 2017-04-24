@@ -12,7 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
 import com.android.rhinos.gest.Service;
-import com.desktop.rhinos.connector.MySqlConnector;
+import com.desktop.rhinos.connector.Connector.App;
 import com.desktop.rhinos.gui.Util;
 import com.desktop.rhinos.gui.dataCollector.ServiceDataCollector;
 
@@ -87,7 +87,7 @@ public class ServiceTable extends RhTable {
 		tm.setRowCount(0);
 		services.clear();
 		
-		services = MySqlConnector.getInstance().getServices(clientId);
+		services = App.CONNECTOR.getServices(clientId);
 		
 		for (Service s : services) {
 			Object [] o = {s.getCampaign(), s.getService(), s.getReferencia(),
@@ -116,7 +116,7 @@ public class ServiceTable extends RhTable {
 				s.setExtId(services.get(r).getExtId());
 				
 				tm.removeRow(r);
-				MySqlConnector.getInstance().deleteService(s);
+				App.CONNECTOR.deleteService(s);
 			}
 		}
 	}

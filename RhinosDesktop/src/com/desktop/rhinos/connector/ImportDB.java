@@ -10,7 +10,10 @@ public class ImportDB {
 		this.target = target;
 	}
 	
-	public void iLoginTable() {
-		target.setLoginTable(source.getLoginTable());
+	public void importInfo() {
+		target.setLoginInfo(source.getLoginInfo());
+		target.setUsersInfo(source.getUsersInfo());
+		target.setServicesInfo(source.getServicesInfo());
+		target.setClientsInfo(source.getClientsInfo());
 	}
 }

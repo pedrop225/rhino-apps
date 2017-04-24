@@ -15,7 +15,6 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
 import com.desktop.rhinos.connector.Connector.App;
-import com.desktop.rhinos.connector.MySqlConnector;
 
 public class CChooserLauncher extends ChooserLauncher {
 
@@ -85,7 +84,7 @@ class CampaignListDialog extends JDialog {
 		setMinimumSize(new java.awt.Dimension(400, 280));
 		getContentPane().setLayout(new BorderLayout());
 		
-		ArrayList<String> camps = MySqlConnector.getInstance().getAuthorizedCampaigns(App.USER);
+		ArrayList<String> camps = App.CONNECTOR.getAuthorizedCampaigns(App.USER);
 		list = new JList<>(camps.toArray());
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		

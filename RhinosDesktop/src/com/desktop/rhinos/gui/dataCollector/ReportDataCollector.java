@@ -19,7 +19,6 @@ import javax.swing.JRadioButton;
 import com.android.rhinos.gest.Service;
 import com.android.rhinos.gest.User;
 import com.desktop.rhinos.connector.Connector.App;
-import com.desktop.rhinos.connector.MySqlConnector;
 import com.desktop.rhinos.gui.table.ServiceTable;
 import com.itextpdf.text.Font;
 
@@ -69,7 +68,7 @@ public class ReportDataCollector extends JPanel {
 					user = App.USER;
 				
 				int date_type = dateFilter.getDateType();
-				ArrayList<Service> as = MySqlConnector.getInstance().getUserServicesByDate(user, dateFilter.getInitialDate(), 
+				ArrayList<Service> as = App.CONNECTOR.getUserServicesByDate(user, dateFilter.getInitialDate(), 
 																							dateFilter.getFinalDate(), date_type);
 				filterBackUp = new Object[as.size()][];
 				
@@ -81,14 +80,14 @@ public class ReportDataCollector extends JPanel {
 				
 				//Obteniendo produccion de los nodos directos
 				if (f_total.isSelected()) {
-					ArrayList<User> arr_u = MySqlConnector.getInstance().getUserChildren(user);
+					ArrayList<User> arr_u = App.CONNECTOR.getUserChildren(user);
 					
 					/*removing the first element (selected user)*/
 					if (arr_u != null) {
 						arr_u.remove(0);
 					
 						for (User u : arr_u) {
-							ArrayList<Service> ser = MySqlConnector.getInstance().getUserServicesByDate(u, dateFilter.getInitialDate(),
+							ArrayList<Service> ser = App.CONNECTOR.getUserServicesByDate(u, dateFilter.getInitialDate(),
 																										dateFilter.getFinalDate(), date_type);
 							/*
 							 * Aumentamos el tamaño del backup de filtros para almacenar los nuevos servicios.

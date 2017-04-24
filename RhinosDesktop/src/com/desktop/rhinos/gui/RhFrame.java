@@ -17,7 +17,6 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
 import com.desktop.rhinos.connector.Connector.App;
-import com.desktop.rhinos.connector.MySqlConnector;
 import com.desktop.rhinos.gui.dataCollector.AccountNumberCollector;
 import com.desktop.rhinos.gui.table.ConsultancyTableDialog;
 import com.desktop.rhinos.gui.table.UserTableDialog;
@@ -61,7 +60,6 @@ public class RhFrame extends JFrame {
 	private RhPanel rhPanel;
 	
 	private Logger log;
-	private MySqlConnector mySql;
 	
 	private RhFrame _this = this;
 		
@@ -84,7 +82,6 @@ public class RhFrame extends JFrame {
 		
 		//creando ventana de login para el usuario
 		log = new Logger(this);
-		mySql = MySqlConnector.getInstance();
 		
 		rhPanel = new RhPanel();
 		getContentPane().setLayout(new BorderLayout());
@@ -275,7 +272,7 @@ public class RhFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {	
 
-				if (mySql.login(log.getUserString(), log.getPasswordString())) {
+				if (App.CONNECTOR.login(log.getUserString(), log.getPasswordString())) {
 					log.setVisible(false);
 					log.clear();
 					showUserBanner();

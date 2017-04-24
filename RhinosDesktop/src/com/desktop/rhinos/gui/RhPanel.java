@@ -19,7 +19,6 @@ import javax.swing.event.ChangeListener;
 
 import com.android.rhinos.gest.Service;
 import com.desktop.rhinos.connector.Connector.App;
-import com.desktop.rhinos.connector.MySqlConnector;
 import com.desktop.rhinos.gui.dataCollector.ReportDataCollector;
 import com.desktop.rhinos.gui.table.ClientTable;
 import com.desktop.rhinos.gui.table.ConsultancyTable;
@@ -63,7 +62,7 @@ public class RhPanel extends JPanel {
 				tm.setRowCount(0);
 				services.clear();
 				
-				ArrayList<Service> as = MySqlConnector.getInstance().getUserServices(App.USER);
+				ArrayList<Service> as = App.CONNECTOR.getUserServices(App.USER);
 				filterBackUp = new Object[as.size()][];
 
 				for (int i = 0; i < as.size(); i++) {

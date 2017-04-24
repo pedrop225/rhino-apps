@@ -22,7 +22,6 @@ import javax.swing.border.EmptyBorder;
 import com.android.rhinos.gest.Campaign;
 import com.android.rhinos.gest.Service;
 import com.desktop.rhinos.connector.Connector.App;
-import com.desktop.rhinos.connector.MySqlConnector;
 import com.desktop.rhinos.structures.tree.RhTree;
 
 @SuppressWarnings("serial")
@@ -82,7 +81,7 @@ public class CampaignsUpdater extends JDialog {
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
-					MySqlConnector.getInstance().clearCampaigns();
+					App.CONNECTOR.clearCampaigns();
 
 					URL url = new URL(textField.getText().trim());
 					BufferedReader bf = new BufferedReader(new InputStreamReader(url.openStream()));
@@ -92,7 +91,7 @@ public class CampaignsUpdater extends JDialog {
 						Campaign camp = new Campaign();
 						camp.load(new URL(l));
 						
-						MySqlConnector.getInstance().addCampaign(camp);
+						App.CONNECTOR.addCampaign(camp);
 					}
 					updateCampaignsTree();
 
@@ -114,7 +113,7 @@ public class CampaignsUpdater extends JDialog {
 		tModel.setRoot("Campañas");
 		tree = new JTree(tModel.getRoot());
 		
-		ArrayList<Campaign> campaigns = MySqlConnector.getInstance().getCampaigns(App.USER);
+		ArrayList<Campaign> campaigns = App.CONNECTOR.getCampaigns(App.USER);
 		
 		for (Campaign camp : campaigns) {
 			tModel.add(tModel.getRoot().getData(), camp.toString());

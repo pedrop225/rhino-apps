@@ -39,7 +39,6 @@ import com.android.rhinos.gest.Dni;
 import com.android.rhinos.gest.Service;
 import com.android.rhinos.gest.User;
 import com.desktop.rhinos.connector.Connector.App;
-import com.desktop.rhinos.connector.MySqlConnector;
 import com.desktop.rhinos.gui.DocumentsDialog;
 import com.desktop.rhinos.gui.Util;
 import com.toedter.calendar.JDateChooser;
@@ -370,7 +369,7 @@ public class ServiceDataCollector extends JDialog {
 					sc.close();				
 					r = r.toUpperCase();
 					
-					MySqlConnector.getInstance().addDocument(f, toModify, r);
+					App.CONNECTOR.addDocument(f, toModify, r);
 				}
 			}
 		});
@@ -402,7 +401,7 @@ public class ServiceDataCollector extends JDialog {
 						if (user == null)
 							user = App.USER;
 						
-						MySqlConnector.getInstance().addService(user.getExtId(), ms, client);
+						App.CONNECTOR.addService(user.getExtId(), ms, client);
 					}
 					//modificacion del servicio.. toModify almacenara la id del servicio a modificar
 					else {
@@ -414,7 +413,7 @@ public class ServiceDataCollector extends JDialog {
 						ms.setCartera(cartera.isSelected());
 						ms.setAnualizar(anualizar.isSelected());
 						
-						MySqlConnector.getInstance().editService(ms);
+						App.CONNECTOR.editService(ms);
 					}
 					
 					dispose();
@@ -505,7 +504,7 @@ public class ServiceDataCollector extends JDialog {
 	}
 	
 	private ArrayList<Campaign> importUserCampaigns() {
-		return MySqlConnector.getInstance().getCampaigns(App.USER);
+		return App.CONNECTOR.getCampaigns(App.USER);
 	}
 	
 	private void updateServices() {
@@ -557,7 +556,7 @@ public class ServiceDataCollector extends JDialog {
 						bt_activate.setIcon(new ImageIcon(CommissionEditor.class.getResource("/icons/modify.png")));
 						if (checkData()) {
 						
-							MySqlConnector.getInstance().editServiceCommission(toModify, Double.parseDouble(getText()));
+							App.CONNECTOR.editServiceCommission(toModify, Double.parseDouble(getText()));
 						}
 						else {
 							JOptionPane.showMessageDialog(null, "Error: \""+commission.getText()+"\" no es una cifra válida..", "Error", JOptionPane.ERROR_MESSAGE);

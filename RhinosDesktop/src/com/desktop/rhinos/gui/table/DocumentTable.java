@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 import com.android.rhinos.gest.RhFile;
-import com.desktop.rhinos.connector.MySqlConnector;
+import com.desktop.rhinos.connector.Connector.App;
 
 @SuppressWarnings("serial")
 public class DocumentTable extends RhTable {
@@ -36,7 +36,7 @@ public class DocumentTable extends RhTable {
 											  JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
 				
 				tm.removeRow(r);
-				MySqlConnector.getInstance().deleteDocument(files.get(r).getId());
+				App.CONNECTOR.deleteDocument(files.get(r).getId());
 			}
 		}
 	}
@@ -48,7 +48,7 @@ public class DocumentTable extends RhTable {
 			
 			int idDocument = ((RhFile)files.get(r)).getId();
 			try {
-				Desktop.getDesktop().open(MySqlConnector.getInstance().getDocument(idDocument));
+				Desktop.getDesktop().open(App.CONNECTOR.getDocument(idDocument));
 			} 
 			catch (IOException e) { }
 		}
@@ -58,7 +58,7 @@ public class DocumentTable extends RhTable {
 	public void updateTableData() {
 		tm.setRowCount(0);
 		
-		files = MySqlConnector.getInstance().getDocumentsInfo(idService);
+		files = App.CONNECTOR.getDocumentsInfo(idService);
 		filterBackUp = new Object[files.size()][];
 		
 		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");

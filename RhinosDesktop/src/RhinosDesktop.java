@@ -8,6 +8,9 @@ public class RhinosDesktop {
 	
 	public static void main(String[] args) {
 		
+		//ImportDB i = new ImportDB(MySqlConnector.getInstance(), DerbyConnector.getInstance());
+		//i.importInfo();
+		
 		RhLoader load = new RhLoader();
 		load.setVisible(true);
 		
@@ -15,8 +18,8 @@ public class RhinosDesktop {
 		    com.jtattoo.plaf.acryl.AcrylLookAndFeel.setTheme("Green", "", "");
 			UIManager.setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");
 		} 
-		catch (Exception e) {}
-			    
+		catch (Exception e) {}		
+		
 		RhFrame f = new RhFrame();
 		load.setVisible(false);
 		f.setExtendedState(JFrame.MAXIMIZED_BOTH);

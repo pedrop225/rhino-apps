@@ -2,12 +2,15 @@ package com.desktop.rhinos.connector;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 import com.android.rhinos.gest.Campaign;
 import com.android.rhinos.gest.Client;
 import com.android.rhinos.gest.Consultancy;
+import com.android.rhinos.gest.RhFile;
 import com.android.rhinos.gest.Service;
 import com.android.rhinos.gest.User;
 
@@ -88,11 +91,24 @@ public interface Connector {
 
 	public boolean addConsultancy(Consultancy consultancy);
 	
-	//import tools
+	//MIGRATE
+	public ArrayList<HashMap<String, String>> getLoginInfo();
+	public ArrayList<HashMap<String, String>> getUsersInfo();
+	public ArrayList<HashMap<String, String>> getServicesInfo();
+	public ArrayList<HashMap<String, String>> getClientsInfo();
 	
-	public void setLoginTable(ArrayList<ArrayList<String>> log);
-	public ArrayList<ArrayList<String>> getLoginTable();
-	
-	public void setUsersTable();
-	public void getUsersTable();
+	public void setLoginInfo(ArrayList<HashMap<String, String>> h);
+	public void setUsersInfo(ArrayList<HashMap<String, String>> h);
+	public void setServicesInfo(ArrayList<HashMap<String, String>> h);
+	public void setClientsInfo(ArrayList<HashMap<String, String>> h);
+
+	public void addDocument(File f, int toModify, String r);
+
+	public User getUserParent(int extId);
+
+	public void deleteDocument(int id);
+
+	public File getDocument(int idDocument);
+
+	public ArrayList<RhFile> getDocumentsInfo(int idService);	
 }

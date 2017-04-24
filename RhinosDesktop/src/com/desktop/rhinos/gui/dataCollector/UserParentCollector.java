@@ -15,7 +15,6 @@ import javax.swing.JTextField;
 
 import com.android.rhinos.gest.User;
 import com.desktop.rhinos.connector.Connector.App;
-import com.desktop.rhinos.connector.MySqlConnector;
 import com.desktop.rhinos.gui.Util;
 import com.desktop.rhinos.gui.dataCollector.interfaces.UserDisplay;
 
@@ -79,7 +78,7 @@ public class UserParentCollector extends JPanel implements UserDisplay {
 					int idParent = tf_launcher.getSelectedUser().getExtId();
 					double p_profit = Double.parseDouble(tf_comm.getText());
 					
-					MySqlConnector.getInstance().editUserParent(user.getExtId(), idParent, p_profit);
+					App.CONNECTOR.editUserParent(user.getExtId(), idParent, p_profit);
 					setFieldsEditable(false);
 				}
 				catch (NumberFormatException e) {
@@ -106,7 +105,7 @@ public class UserParentCollector extends JPanel implements UserDisplay {
 		tf_name.setText(user.getName().toUpperCase());
 				
 		//Obteniendo datos del padre
-		User parent = MySqlConnector.getInstance().getUserParent(user.getExtId());
+		User parent = App.CONNECTOR.getUserParent(user.getExtId());
 		tf_launcher.setUser(parent);
 		
 		if (parent != null) {

@@ -10,7 +10,6 @@ import javax.swing.tree.TreePath;
 
 import com.android.rhinos.gest.User;
 import com.desktop.rhinos.connector.Connector.App;
-import com.desktop.rhinos.connector.MySqlConnector;
 import com.desktop.rhinos.structures.tree.RhNode;
 import com.desktop.rhinos.structures.tree.RhTree;
 
@@ -34,7 +33,7 @@ public class UserHierarchy extends JPanel {
 	}
 	
 	public void setUser(User user) {
-		ArrayList<ArrayList<User>> st = MySqlConnector.getInstance().getUserStructure(user);
+		ArrayList<ArrayList<User>> st = App.CONNECTOR.getUserStructure(user);
 		
 		RhTree<User> t = new RhTree<User>(user);
 		for (int i = 0; i < st.size(); i++)

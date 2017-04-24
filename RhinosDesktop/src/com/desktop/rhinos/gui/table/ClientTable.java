@@ -7,7 +7,6 @@ import javax.swing.JOptionPane;
 
 import com.android.rhinos.gest.Client;
 import com.desktop.rhinos.connector.Connector.App;
-import com.desktop.rhinos.connector.MySqlConnector;
 import com.desktop.rhinos.gui.AddContract;
 
 public class ClientTable extends RhTable {
@@ -35,7 +34,7 @@ public class ClientTable extends RhTable {
 			if (JOptionPane.showConfirmDialog(null, "Desea eliminar el cliente \""+name+"\"? ", "Elimindo cliente ..", 
 											  JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
 				
-				MySqlConnector.getInstance().deleteClient(id);
+				App.CONNECTOR.deleteClient(id);
 				updateTableData();
 			}
 		}
@@ -53,7 +52,7 @@ public class ClientTable extends RhTable {
 	public void updateTableData() {
 		tm.setRowCount(0);
 		
-		ArrayList<Client> ac = MySqlConnector.getInstance().getClients(App.USER);
+		ArrayList<Client> ac = App.CONNECTOR.getClients(App.USER);
 		filterBackUp = new Object[ac.size()][];
 		
 		for (int i = 0; i < ac.size(); i++) {

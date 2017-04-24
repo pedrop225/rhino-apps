@@ -13,7 +13,6 @@ import javax.swing.event.ListSelectionListener;
 
 import com.android.rhinos.gest.Consultancy;
 import com.desktop.rhinos.connector.Connector.App;
-import com.desktop.rhinos.connector.MySqlConnector;
 import com.desktop.rhinos.gui.Util;
 import com.desktop.rhinos.gui.dataCollector.ConsultancyDataCollector;
 
@@ -64,7 +63,7 @@ public class ConsultancyTable extends RhTable {
 		editButton.addActionListener(new ActionListener() {	
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				MySqlConnector.getInstance().editConsultancy(display.getConsultancy());
+				App.CONNECTOR.editConsultancy(display.getConsultancy());
 				updateTableData();
 			}
 		});
@@ -90,7 +89,7 @@ public class ConsultancyTable extends RhTable {
 		tm.setRowCount(0);
 		delete.setVisible(tm.getRowCount() > 0);
 		
-		c = MySqlConnector.getInstance().getConsultancy();
+		c = App.CONNECTOR.getConsultancy();
 		filterBackUp = new Object[c.size()][];
 		
 		for (int j = 0; j < c.size(); j++) {
@@ -128,7 +127,7 @@ public class ConsultancyTable extends RhTable {
 				
 				c.remove(r);
 				tm.removeRow(r);
-				MySqlConnector.getInstance().deleteConsultancy(cons.getExtId());
+				App.CONNECTOR.deleteConsultancy(cons.getExtId());
 			}
 			
 			updateTableData();

@@ -14,7 +14,6 @@ import javax.swing.border.TitledBorder;
 
 import com.android.rhinos.gest.User;
 import com.desktop.rhinos.connector.Connector.App;
-import com.desktop.rhinos.connector.MySqlConnector;
 import com.desktop.rhinos.gui.AddContract;
 import com.desktop.rhinos.gui.Util;
 import com.desktop.rhinos.gui.dataCollector.interfaces.UserDisplay;
@@ -156,7 +155,7 @@ public class UserDataCollector extends JPanel implements UserDisplay {
 	}
 	
 	public void setData(int id) {
-		User u = MySqlConnector.getInstance().getUserById(id);
+		User u = App.CONNECTOR.getUserById(id);
 		setData(u);
 	}
 	

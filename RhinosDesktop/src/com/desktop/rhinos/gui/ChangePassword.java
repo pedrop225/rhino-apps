@@ -15,7 +15,6 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 
 import com.desktop.rhinos.connector.Connector.App;
-import com.desktop.rhinos.connector.MySqlConnector;
 
 public class ChangePassword extends JDialog {
 	
@@ -80,10 +79,10 @@ public class ChangePassword extends JDialog {
 		btnNewButton.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
-				if (MySqlConnector.getInstance().login(App.USER.getUser(), new String(textField.getPassword())) &&
+				if (App.CONNECTOR.login(App.USER.getUser(), new String(textField.getPassword())) &&
 					new String(textField_1.getPassword()).trim().equals(new String(textField_2.getPassword()).trim())) {
 					
-					MySqlConnector.getInstance().changePassword(App.USER.getUser(), new String(textField_1.getPassword()).trim());
+					App.CONNECTOR.changePassword(App.USER.getUser(), new String(textField_1.getPassword()).trim());
 					
 					_this.setVisible(false);
 				}

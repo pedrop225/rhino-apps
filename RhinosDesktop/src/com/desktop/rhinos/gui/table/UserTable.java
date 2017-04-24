@@ -14,7 +14,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.android.rhinos.gest.User;
-import com.desktop.rhinos.connector.MySqlConnector;
+import com.desktop.rhinos.connector.Connector.App;
 import com.desktop.rhinos.gui.Util;
 import com.desktop.rhinos.gui.dataCollector.UserCampaingsCollector;
 import com.desktop.rhinos.gui.dataCollector.UserDataCollector;
@@ -76,7 +76,7 @@ public class UserTable extends RhTable {
 		editButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				//MySqlConnector.getInstance().editAccount(display.getUser());
+				//App.CONNECTOR.editAccount(display.getUser());
 				display.setFieldsEditable(false);
 				updateTableData();
 			}
@@ -129,7 +129,7 @@ public class UserTable extends RhTable {
 		tm.setRowCount(0);
 		delete.setVisible(tm.getRowCount() > 0);
 		
-		c = MySqlConnector.getInstance().getUsers();
+		c = App.CONNECTOR.getUsers();
 		filterBackUp = new Object[c.size()][];
 		
 		for (int j = 0; j < c.size(); j++) {
@@ -157,7 +157,7 @@ public class UserTable extends RhTable {
 												== JOptionPane.YES_OPTION) {
 				
 				int r = table.convertRowIndexToModel(table.getSelectedRow());
-				MySqlConnector.getInstance().deleteAccount(c.get(r).getExtId());
+				App.CONNECTOR.deleteAccount(c.get(r).getExtId());
 			}
 			
 			updateTableData();

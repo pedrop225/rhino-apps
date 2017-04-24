@@ -10,9 +10,9 @@ import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Vector;
 
 import javax.crypto.SecretKey;
 
@@ -966,42 +966,89 @@ public class MySqlConnector implements Connector {
 	}
 	
 	//MIGRATE
+	@Override
+	public ArrayList<HashMap<String, String>> getLoginInfo() {
+		HashSet<String> set = new HashSet<>();
+		set.add("id");
+		return getTableInfo("login", set);
+	}
 	
 	@Override
-	public ArrayList<ArrayList<String>> getLoginTable() {
-		ArrayList<ArrayList<String>> tr = new ArrayList<ArrayList<String>>();
+	public ArrayList<HashMap<String, String>> getUsersInfo() {
+		HashSet<String> set = new HashSet<>();
+		set.add("id");
+		set.add("type");
+		return getTableInfo("users", set);
+	}
+	
+	@Override
+	public ArrayList<HashMap<String, String>> getServicesInfo() {
+		HashSet<String> set = new HashSet<>();
+		set.add("id");
+		set.add("idUser");
+		set.add("commission");
+		set.add("date");
+		set.add("expiry");
+		set.add("state");
+		set.add("referencia");
+		set.add("f_pago");
+		set.add("p_neta");
+		set.add("cartera");
+		set.add("anualizar");
+		return getTableInfo("services", set);
+	}
+	
+	@Override
+	public ArrayList<HashMap<String, String>> getClientsInfo() {
+		HashSet<String> set = new HashSet<>();
+		set.add("b_date");
+		set.add("consultancy");
+		return getTableInfo("clients", set);
+	}
+	
+	@Override
+	public void setClientsInfo(ArrayList<HashMap<String, String>> h) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void setServicesInfo(ArrayList<HashMap<String, String>> h) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void setLoginInfo(ArrayList<HashMap<String, String>> log) {
+		// TODO Auto-generated method stub
+	}
+	
+	@Override
+	public void setUsersInfo(ArrayList<HashMap<String, String>> h) {
+		// TODO Auto-generated method stub
+	}
+	
+	private ArrayList<HashMap<String, String>> getTableInfo(String table, HashSet<String> noDecode) {
+		ArrayList<HashMap<String, String>> tr = new ArrayList<>();
 		
 	    ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-	    nameValuePairs.add(new BasicNameValuePair("table", "login"));
+	    nameValuePairs.add(new BasicNameValuePair("table", table));
 	   
-    	System.out.println("hello");
-
 	    JSONArray jsonArray = getDataFromDB(App.external_path+"/migrate/db_export.php", nameValuePairs);
 	    
-	    System.out.println(jsonArray.length());
 	    try {
 		    for (int i = 0; i < jsonArray.length(); i++) {
 		    	JSONObject jsonObj = jsonArray.getJSONObject(i);
+		    	String names[] = JSONObject.getNames(jsonObj);
 		    	
+		    	HashMap<String, String> aux = new HashMap<>();
+		    	
+		    	for (int j = 0; j < names.length; j++)
+		    		aux.put(names[j], (noDecode.contains(names[j])) ? jsonObj.getString(names[j]).trim() : cipher.decode(jsonObj.getString(names[j])).trim());
+		    	
+		    	tr.add(aux);
 		    }
 	    }
 		catch (Exception e ){e.printStackTrace();}
 	    return tr;
-	}
-	
-	@Override
-	public void getUsersTable() {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void setLoginTable(ArrayList<ArrayList<String>> log) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void setUsersTable() {
-		// TODO Auto-generated method stub
-		
 	}
 }
