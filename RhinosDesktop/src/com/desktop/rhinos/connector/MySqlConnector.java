@@ -1007,6 +1007,12 @@ public class MySqlConnector implements Connector {
 	}
 	
 	@Override
+	public ArrayList<HashMap<String, String>> getAddressInfo() {
+		HashSet<String> set = new HashSet<>();
+		return getTableInfo("services", set);
+	}
+	
+	@Override
 	public void setClientsInfo(ArrayList<HashMap<String, String>> h) {
 		// TODO Auto-generated method stub
 		
@@ -1025,6 +1031,12 @@ public class MySqlConnector implements Connector {
 	@Override
 	public void setUsersInfo(ArrayList<HashMap<String, String>> h) {
 		// TODO Auto-generated method stub
+	}
+	
+	@Override
+	public void setAddressInfo(ArrayList<HashMap<String, String>> h) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	private ArrayList<HashMap<String, String>> getTableInfo(String table, HashSet<String> noDecode) {

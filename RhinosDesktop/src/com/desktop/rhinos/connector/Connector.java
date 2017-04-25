@@ -96,11 +96,13 @@ public interface Connector {
 	public ArrayList<HashMap<String, String>> getUsersInfo();
 	public ArrayList<HashMap<String, String>> getServicesInfo();
 	public ArrayList<HashMap<String, String>> getClientsInfo();
-	
+	public ArrayList<HashMap<String, String>> getAddressInfo();
+		
 	public void setLoginInfo(ArrayList<HashMap<String, String>> h);
 	public void setUsersInfo(ArrayList<HashMap<String, String>> h);
 	public void setServicesInfo(ArrayList<HashMap<String, String>> h);
 	public void setClientsInfo(ArrayList<HashMap<String, String>> h);
+	public void setAddressInfo(ArrayList<HashMap<String, String>> h);
 
 	public void addDocument(File f, int toModify, String r);
 

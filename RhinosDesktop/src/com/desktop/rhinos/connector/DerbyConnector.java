@@ -57,30 +57,42 @@ public class DerbyConnector implements Connector {
 				
 				st.executeUpdate("CREATE TABLE services(id INT PRIMARY KEY NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),"
 												+ " idUser INT,"
-												+ " idClient VARCHAR(40),"
-												+ " service VARCHAR(40), "
-												+ " campaign VARCHAR(40), "
-												+ " commission DOUBLE, "
-												+ " date DATE, "
-												+ " expiry DATE, "
-												+ " state SMALLINT, "
-												+ " referencia VARCHAR(20), "
-												+ " f_pago SMALLINT, "
-												+ " p_neta DOUBLE, "
-												+ " ccc VARCHAR(30), "
-												+ " cartera SMALLINT, "
-												+ " anualizar SMALLINT, "
+												+ " idClient VARCHAR(20),"
+												+ " service VARCHAR(20),"
+												+ " campaign VARCHAR(20),"
+												+ " commission DOUBLE,"
+												+ " date DATE,"
+												+ " expiry DATE,"
+												+ " state SMALLINT,"
+												+ " referencia VARCHAR(20),"
+												+ " f_pago SMALLINT,"
+												+ " p_neta DOUBLE,"
+												+ " ccc VARCHAR(30),"
+												+ " cartera SMALLINT,"
+												+ " anualizar SMALLINT,"
 												+ " notes LONG VARCHAR)");
 				
 				st.executeUpdate("CREATE TABLE clients(idClient VARCHAR(40) PRIMARY KEY NOT NULL,"
 												+ " b_date DATE,"
 												+ " name VARCHAR(80),"
-												+ " tlf_1 VARCHAR(20), "
-												+ " tlf_2 VARCHAR(20), "
-												+ " mail VARCHAR(40), "
+												+ " tlf_1 VARCHAR(20),"
+												+ " tlf_2 VARCHAR(20),"
+												+ " mail VARCHAR(40),"
 												+ " consultancy INT)");
+				
+				st.executeUpdate("CREATE TABLE address(id VARCHAR(20) PRIMARY KEY NOT NULL,"
+												+ " tipo_via VARCHAR(20),"
+												+ " nombre_via VARCHAR(40),"
+												+ " numero VARCHAR(20),"
+												+ " portal VARCHAR(20),"
+												+ " escalera VARCHAR(20),"
+												+ " piso VARCHAR(20),"
+												+ " puerta VARCHAR(20),"
+												+ " poblacion VARCHAR(20),"
+												+ " municipio VARCHAR(20),"
+												+ " cp VARCHAR(20))");
+				
 				st.close();
-				shutdownConnection();
 			}
 		}
 		catch (SQLException e) {e.printStackTrace();}		
@@ -90,7 +102,6 @@ public class DerbyConnector implements Connector {
 	public boolean login(String user, String password) {
 		boolean toRet = false;
 		try {
-			conn = createConnection(false);
 			Statement st = conn.createStatement();
 			ResultSet r = st.executeQuery("SELECT * FROM login NATURAL JOIN users WHERE username='"+user+"' "
 											+ "AND password='"+password+"'");
@@ -104,7 +115,6 @@ public class DerbyConnector implements Connector {
 			}
 			
 			st.close();
-			shutdownConnection();
 		} 
 		catch (SQLException e) {e.printStackTrace();}
 		return toRet;
@@ -144,18 +154,17 @@ public class DerbyConnector implements Connector {
 	public ArrayList<Client> getClients(User u) {
 		ArrayList<Client> tr = new ArrayList<>();
 		try {
-	    	conn = createConnection(false);
 	    	Statement st = conn.createStatement();
 	    	ResultSet r;
 	    	
 	    	if (u.isRoot())
-	    		r = st.executeQuery("SELECT id, name, b_date, tlf_1 FROM CLIENTS");
+	    		r = st.executeQuery("SELECT idClient, name, b_date, tlf_1 FROM CLIENTS");
 	    	else
 	    		r = st.executeQuery("SELECT DISTINCT clients.idClient, name, b_date, tlf_1 "
 	    									+ "FROM clients, services "
 	    									+ "WHERE (clients.idClient = services.idClient) AND (idUser="+u.getExtId()+")");
 	    	
-			while (r.next()) {
+			while (r.next()) {	
 				Client cl = new Client();
 				cl.setId(new Dni(r.getString("idClient")));
 				cl.setBDate(new Date(r.getString("b_date").replace("-", "/")));
@@ -177,9 +186,38 @@ public class DerbyConnector implements Connector {
 	}
 
 	@Override
-	public Client clientExists(String _id) {
-		// TODO Auto-generated method stub
-		return null;
+	public Client clientExists(String id) {
+		Client client = null;
+		try {
+			Statement st = conn.createStatement();
+			ResultSet r = st.executeQuery("SELECT * FROM clients NATURAL JOIN address WHERE id='"+id+"'");
+		
+		    while (r.next()) {
+				client = new Client();
+				client.setId(new Dni(id));
+				client.setBDate(new Date(r.getString("b_date").replace("-", "/")));
+				
+				client.setName(r.getString("name"));
+				client.setTlf_1(r.getString("tlf_1"));
+				client.setTlf_2(r.getString("tlf_2"));
+				client.setMail(r.getString("mail"));
+				client.setConsultancy(r.getInt("consultancy"));
+				
+				client.setDirTipoVia(r.getString("tipo_via"));
+				client.setDirNombreVia(r.getString("nombre_via"));
+				client.setDirNumero(r.getString("numero"));
+				client.setDirPortal(r.getString("portal"));
+				client.setDirEscalera(r.getString("escalera"));
+				client.setDirPiso(r.getString("piso"));
+				client.setDirPuerta(r.getString("puerta"));
+				client.setDirPoblacion(r.getString("poblacion"));
+				client.setDirMunicipio(r.getString("municipio"));
+				client.setDirCp(r.getString("cp"));
+			}
+	    }
+	    catch (SQLException e) {e.printStackTrace();}
+
+		return client;
 	}
 
 	@Override
@@ -190,7 +228,7 @@ public class DerbyConnector implements Connector {
 
 	@Override
 	public ArrayList<Service> getServices(String _id) {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
@@ -220,8 +258,46 @@ public class DerbyConnector implements Connector {
 
 	@Override
 	public ArrayList<Service> getUserServicesByDate(User u, Date date_in, Date date_out, int date_type) {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Service> tr = new ArrayList<Service>();
+		
+		try {
+			String d_type = (date_type == 0) ? "date" : "expiry";
+			Statement st = conn.createStatement();
+			ResultSet r = st.executeQuery (" SELECT services.id, clients.idClient, name, campaign, service, "
+													+ "date, expiry, commission, state, notes, referencia, "
+													+ "f_pago, p_neta, ccc, cartera, anualizar "
+												+ "FROM Clients, Services "
+												+ "WHERE (idUser="+u.getExtId()+" AND clients.id=services.idClient) "
+												+ "AND ("+ d_type +" >= "+date_in.getDate()+" AND "+ d_type +" <= "+date_out.getDate()+") ORDER BY date");
+			while (r.next()) {
+				Service s = new Service(r.getString("service"), r.getDouble("commission"));
+								
+				s.setExtId(r.getInt("id"));
+				s.setCampaign(r.getString("campaign"));
+				s.setDate(new Date(r.getString("date").replace("-", "/")));
+				s.setExpiryDate(new Date(r.getString("expiry").replace("-", "/")));
+				s.setState(r.getInt("state"));
+				s.setNotes(r.getString("notes"));
+				
+				s.setReferencia(r.getString("referencia"));
+				s.setF_pago(r.getInt("f_pago"));
+				s.setpNeta(r.getDouble("p_neta"));
+				s.setCcc(r.getString("ccc"));
+				s.setCartera(r.getInt("cartera") > 0);
+				s.setAnualizar(r.getInt("anualizar") > 0);
+				
+				s.setId(new Dni(r.getString("idClient")));
+				s.setTitular(r.getString("name"));
+				
+				tr.add(s);
+			}
+			
+			st.close();
+			
+		}
+		catch (SQLException e) {e.printStackTrace();}
+		
+		return tr;
 	}
 
 	@Override
@@ -357,6 +433,12 @@ public class DerbyConnector implements Connector {
 	}
 	
 	@Override
+	public ArrayList<HashMap<String, String>> getAddressInfo() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
 	public void addDocument(File f, int toModify, String r) {
 		// TODO Auto-generated method stub
 		
@@ -390,7 +472,6 @@ public class DerbyConnector implements Connector {
 	@Override
 	public void setLoginInfo(ArrayList<HashMap<String, String>> array) {
 		try {
-			conn = createConnection(false);
 			Statement st = conn.createStatement();
 			for (HashMap<String, String> h : array) {
 				st.execute("INSERT INTO login (username, password) VALUES("
@@ -399,6 +480,7 @@ public class DerbyConnector implements Connector {
 			}
 			st.close();
 			shutdownConnection();
+			conn = createConnection(false);
 		}
 		catch (SQLException e) {}
 	}
@@ -406,7 +488,6 @@ public class DerbyConnector implements Connector {
 	@Override
 	public void setUsersInfo(ArrayList<HashMap<String, String>> array) {
 		try {
-			conn = createConnection(false);
 			Statement st = conn.createStatement();
 			for (HashMap<String, String> h : array) {
 				st.execute("INSERT INTO users (id, type, name, mail) VALUES("
@@ -417,6 +498,7 @@ public class DerbyConnector implements Connector {
 			}
 			st.close();
 			shutdownConnection();
+			conn = createConnection(false);
 		}
 		catch (SQLException e) {e.printStackTrace();}
 	}
@@ -424,7 +506,6 @@ public class DerbyConnector implements Connector {
 	@Override
 	public void setClientsInfo(ArrayList<HashMap<String, String>> array) {
 		try {
-			conn = createConnection(false);
 			Statement st = conn.createStatement();
 			for (HashMap<String, String> h : array) {
 				st.execute("INSERT INTO clients (idclient, b_date, name, tlf_1, tlf_2, mail, consultancy) "
@@ -438,6 +519,7 @@ public class DerbyConnector implements Connector {
 			}
 			st.close();
 			shutdownConnection();
+			conn = createConnection(false);
 		}
 		catch (SQLException e) {e.printStackTrace();}
 	}
@@ -445,7 +527,6 @@ public class DerbyConnector implements Connector {
 	@Override
 	public void setServicesInfo(ArrayList<HashMap<String, String>> array) {
 		try {
-			conn = createConnection(false);
 			Statement st = conn.createStatement();
 			for (HashMap<String, String> h : array) {
 				st.executeUpdate("INSERT INTO services (idUser, idClient, service, "
@@ -470,7 +551,35 @@ public class DerbyConnector implements Connector {
 			}
 			st.close();
 			shutdownConnection();
+			conn = createConnection(false);
 		}
 		catch (SQLException e) {e.printStackTrace();}
+	}
+	
+	@Override
+	public void setAddressInfo(ArrayList<HashMap<String, String>> array) {
+		try {
+			Statement st = conn.createStatement();
+			for (HashMap<String, String> h : array) {
+				st.executeUpdate("INSERT INTO address (id, tipo_via, nombre_via, "
+											+ "numero, portal, escalera, piso, "
+											+ "puerta, poblacion, municipio, cp "
+											+ "VALUES(" +"'"+h.get("id")+"',"
+														+"'"+h.get("tipo_via")+"',"
+														+"'"+h.get("nombre_via")+"',"
+														+"'"+h.get("numero")+"',"
+														+"'"+h.get("portal")+"',"
+														+"'"+h.get("escalera")+"',"
+														+"'"+h.get("piso")+"',"
+														+"'"+h.get("puerta")+"',"
+														+"'"+h.get("poblacion")+"',"
+														+"'"+h.get("municipio")+"',"
+														+"'"+h.get("cp")+"')");
+			}
+			st.close();
+			shutdownConnection();
+			conn = createConnection(false);
+		}
+		catch (SQLException e) {e.printStackTrace();}	
 	}
 }

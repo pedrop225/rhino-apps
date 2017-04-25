@@ -15,5 +15,6 @@ public class ImportDB {
 		target.setUsersInfo(source.getUsersInfo());
 		target.setServicesInfo(source.getServicesInfo());
 		target.setClientsInfo(source.getClientsInfo());
+		target.setAddressInfo(source.getAddressInfo());
 	}
 }
