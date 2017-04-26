@@ -92,18 +92,26 @@ public interface Connector {
 	public boolean addConsultancy(Consultancy consultancy);
 	
 	//MIGRATE
-	public ArrayList<HashMap<String, String>> getLoginInfo();
-	public ArrayList<HashMap<String, String>> getUsersInfo();
-	public ArrayList<HashMap<String, String>> getServicesInfo();
-	public ArrayList<HashMap<String, String>> getClientsInfo();
-	public ArrayList<HashMap<String, String>> getAddressInfo();
+	public ArrayList<HashMap<String, Object>> getLoginInfo();
+	public ArrayList<HashMap<String, Object>> getUsersInfo();
+	public ArrayList<HashMap<String, Object>> getServicesInfo();
+	public ArrayList<HashMap<String, Object>> getClientsInfo();
+	public ArrayList<HashMap<String, Object>> getAddressInfo();
+	public ArrayList<HashMap<String, Object>> getCampaignsInfo();
+	public ArrayList<HashMap<String, Object>> getCampinfoInfo();
+	public ArrayList<HashMap<String, Object>> getPermissionsInfo();
+	public ArrayList<HashMap<String, Object>> getDocumentsTableInfo();
 		
-	public void setLoginInfo(ArrayList<HashMap<String, String>> h);
-	public void setUsersInfo(ArrayList<HashMap<String, String>> h);
-	public void setServicesInfo(ArrayList<HashMap<String, String>> h);
-	public void setClientsInfo(ArrayList<HashMap<String, String>> h);
-	public void setAddressInfo(ArrayList<HashMap<String, String>> h);
-
+	public void setLoginInfo(ArrayList<HashMap<String, Object>> h);
+	public void setUsersInfo(ArrayList<HashMap<String, Object>> h);
+	public void setServicesInfo(ArrayList<HashMap<String, Object>> h);
+	public void setClientsInfo(ArrayList<HashMap<String, Object>> h);
+	public void setAddressInfo(ArrayList<HashMap<String, Object>> h);
+	public void setCampaignsInfo(ArrayList<HashMap<String, Object>> h);
+	public void setCampinfoInfo(ArrayList<HashMap<String, Object>> h);
+	public void setPermissionsInfo(ArrayList<HashMap<String, Object>> h);
+	public void setDocumentsTableInfo(ArrayList<HashMap<String, Object>> h);
+	
 	public void addDocument(File f, int toModify, String r);
 
 	public User getUserParent(int extId);

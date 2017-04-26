@@ -118,8 +118,7 @@ public class MySqlConnector implements Connector {
 	}
 
 	@Override
-	public ArrayList<Campaign> getCampaigns(User u) {
-		
+	public ArrayList<Campaign> getCampaigns(User u) {		
 		ArrayList<Campaign> r = new ArrayList<Campaign>();
 	    
 		ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
@@ -136,7 +135,6 @@ public class MySqlConnector implements Connector {
 				Campaign camp = new Campaign(name);
 
 				for (int i = 0; i < jsonArray.length(); i++) {
-
 					jsonObj = jsonArray.getJSONObject(i);
 					
 					if (!(name = cipher.decode(jsonObj.getString("name"))).equals(old)) {
@@ -967,14 +965,14 @@ public class MySqlConnector implements Connector {
 	
 	//MIGRATE
 	@Override
-	public ArrayList<HashMap<String, String>> getLoginInfo() {
+	public ArrayList<HashMap<String, Object>> getLoginInfo() {
 		HashSet<String> set = new HashSet<>();
 		set.add("id");
 		return getTableInfo("login", set);
 	}
 	
 	@Override
-	public ArrayList<HashMap<String, String>> getUsersInfo() {
+	public ArrayList<HashMap<String, Object>> getUsersInfo() {
 		HashSet<String> set = new HashSet<>();
 		set.add("id");
 		set.add("type");
@@ -982,7 +980,7 @@ public class MySqlConnector implements Connector {
 	}
 	
 	@Override
-	public ArrayList<HashMap<String, String>> getServicesInfo() {
+	public ArrayList<HashMap<String, Object>> getServicesInfo() {
 		HashSet<String> set = new HashSet<>();
 		set.add("id");
 		set.add("idUser");
@@ -999,7 +997,7 @@ public class MySqlConnector implements Connector {
 	}
 	
 	@Override
-	public ArrayList<HashMap<String, String>> getClientsInfo() {
+	public ArrayList<HashMap<String, Object>> getClientsInfo() {
 		HashSet<String> set = new HashSet<>();
 		set.add("b_date");
 		set.add("consultancy");
@@ -1007,40 +1005,93 @@ public class MySqlConnector implements Connector {
 	}
 	
 	@Override
-	public ArrayList<HashMap<String, String>> getAddressInfo() {
+	public ArrayList<HashMap<String, Object>> getAddressInfo() {
 		HashSet<String> set = new HashSet<>();
-		return getTableInfo("services", set);
+		return getTableInfo("address", set);
 	}
 	
 	@Override
-	public void setClientsInfo(ArrayList<HashMap<String, String>> h) {
+	public ArrayList<HashMap<String, Object>> getCampaignsInfo() {
+		HashSet<String> set = new HashSet<>();
+		set.add("id");
+		return getTableInfo("campaigns", set);
+	}
+	
+	@Override
+	public ArrayList<HashMap<String, Object>> getCampinfoInfo() {
+		HashSet<String> set = new HashSet<>();
+		set.add("id");
+		set.add("commission");
+		return getTableInfo("campinfo", set);
+	}
+	
+	@Override
+	public ArrayList<HashMap<String, Object>> getPermissionsInfo() {
+		HashSet<String> set = new HashSet<>();
+		set.add("idUser");
+		return getTableInfo("permissions", set);
+	}
+	
+	@Override
+	public ArrayList<HashMap<String, Object>> getDocumentsTableInfo() {
+		HashSet<String> set = new HashSet<>();
+		set.add("id");
+		set.add("idService");
+		set.add("date");
+		set.add("doc");
+		return getTableInfo("documents", set);
+	}
+	
+	@Override
+	public void setClientsInfo(ArrayList<HashMap<String, Object>> h) {
 		// TODO Auto-generated method stub
 		
 	}
 	
 	@Override
-	public void setServicesInfo(ArrayList<HashMap<String, String>> h) {
+	public void setServicesInfo(ArrayList<HashMap<String, Object>> h) {
 		// TODO Auto-generated method stub
 		
 	}
 	@Override
-	public void setLoginInfo(ArrayList<HashMap<String, String>> log) {
+	public void setLoginInfo(ArrayList<HashMap<String, Object>> log) {
 		// TODO Auto-generated method stub
 	}
 	
 	@Override
-	public void setUsersInfo(ArrayList<HashMap<String, String>> h) {
+	public void setUsersInfo(ArrayList<HashMap<String, Object>> h) {
 		// TODO Auto-generated method stub
 	}
 	
 	@Override
-	public void setAddressInfo(ArrayList<HashMap<String, String>> h) {
+	public void setAddressInfo(ArrayList<HashMap<String, Object>> h) {
+		// TODO Auto-generated method stub	
+	}
+	
+	@Override
+	public void setCampaignsInfo(ArrayList<HashMap<String, Object>> h) {
+		// TODO Auto-generated method stub	
+	}
+	
+	@Override
+	public void setCampinfoInfo(ArrayList<HashMap<String, Object>> h) {
 		// TODO Auto-generated method stub
 		
 	}
 	
-	private ArrayList<HashMap<String, String>> getTableInfo(String table, HashSet<String> noDecode) {
-		ArrayList<HashMap<String, String>> tr = new ArrayList<>();
+	@Override
+	public void setPermissionsInfo(ArrayList<HashMap<String, Object>> h) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void setDocumentsTableInfo(ArrayList<HashMap<String, Object>> h) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	private ArrayList<HashMap<String, Object>> getTableInfo(String table, HashSet<String> noDecode) {
+		ArrayList<HashMap<String, Object>> tr = new ArrayList<>();
 		
 	    ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 	    nameValuePairs.add(new BasicNameValuePair("table", table));
@@ -1052,11 +1103,9 @@ public class MySqlConnector implements Connector {
 		    	JSONObject jsonObj = jsonArray.getJSONObject(i);
 		    	String names[] = JSONObject.getNames(jsonObj);
 		    	
-		    	HashMap<String, String> aux = new HashMap<>();
-		    	
+		    	HashMap<String, Object> aux = new HashMap<>();		    	
 		    	for (int j = 0; j < names.length; j++)
 		    		aux.put(names[j], (noDecode.contains(names[j])) ? jsonObj.getString(names[j]).trim() : cipher.decode(jsonObj.getString(names[j])).trim());
-		    	
 		    	tr.add(aux);
 		    }
 	    }

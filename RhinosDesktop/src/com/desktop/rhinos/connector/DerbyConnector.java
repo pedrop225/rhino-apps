@@ -1,6 +1,7 @@
 package com.desktop.rhinos.connector;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -9,6 +10,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+
+import org.apache.commons.codec.binary.Base64;
 
 import com.android.rhinos.gest.Campaign;
 import com.android.rhinos.gest.Client;
@@ -28,7 +31,7 @@ public class DerbyConnector implements Connector {
 	}
 	
 	private Connection createConnection(boolean create) throws SQLException {
-		return DriverManager.getConnection("jdbc:derby:./RHINOS.DB;create="+create+";territory=es_ES;collation=TERRITORY_BASED");
+		return DriverManager.getConnection("jdbc:derby:./RHINOS.DB;create="+create);
 	}
 	
 	private void shutdownConnection() {
@@ -43,31 +46,32 @@ public class DerbyConnector implements Connector {
 		try {
 			boolean createDB = !new File("RHINOS.DB").exists();
 			conn = createConnection(createDB);
+			new File("RHINOS.DB/docs").mkdir();
 
 			if (createDB) {
 				Statement st = conn.createStatement();
 				st.executeUpdate("CREATE TABLE login (id INT PRIMARY KEY NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),"
-											+ "	username VARCHAR(20),"
-											+ "	password VARCHAR(20))");
+											+ "	username VARCHAR(40),"
+											+ "	password VARCHAR(40))");
 				
 				st.executeUpdate("CREATE TABLE users (id INT PRIMARY KEY,"
 											+ " type INT,"
-											+ " name VARCHAR(40),"
-											+ "	mail VARCHAR(40))");
+											+ " name VARCHAR(80),"
+											+ "	mail VARCHAR(80))");
 				
 				st.executeUpdate("CREATE TABLE services(id INT PRIMARY KEY NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),"
 												+ " idUser INT,"
-												+ " idClient VARCHAR(20),"
-												+ " service VARCHAR(20),"
-												+ " campaign VARCHAR(20),"
+												+ " idClient VARCHAR(40),"
+												+ " service VARCHAR(40),"
+												+ " campaign VARCHAR(40),"
 												+ " commission DOUBLE,"
 												+ " date DATE,"
 												+ " expiry DATE,"
 												+ " state SMALLINT,"
-												+ " referencia VARCHAR(20),"
+												+ " referencia VARCHAR(40),"
 												+ " f_pago SMALLINT,"
 												+ " p_neta DOUBLE,"
-												+ " ccc VARCHAR(30),"
+												+ " ccc VARCHAR(40),"
 												+ " cartera SMALLINT,"
 												+ " anualizar SMALLINT,"
 												+ " notes LONG VARCHAR)");
@@ -77,20 +81,37 @@ public class DerbyConnector implements Connector {
 												+ " name VARCHAR(80),"
 												+ " tlf_1 VARCHAR(20),"
 												+ " tlf_2 VARCHAR(20),"
-												+ " mail VARCHAR(40),"
+												+ " mail VARCHAR(80),"
 												+ " consultancy INT)");
 				
 				st.executeUpdate("CREATE TABLE address(id VARCHAR(20) PRIMARY KEY NOT NULL,"
 												+ " tipo_via VARCHAR(20),"
-												+ " nombre_via VARCHAR(40),"
+												+ " nombre_via VARCHAR(80),"
 												+ " numero VARCHAR(20),"
 												+ " portal VARCHAR(20),"
 												+ " escalera VARCHAR(20),"
 												+ " piso VARCHAR(20),"
 												+ " puerta VARCHAR(20),"
-												+ " poblacion VARCHAR(20),"
-												+ " municipio VARCHAR(20),"
+												+ " poblacion VARCHAR(80),"
+												+ " municipio VARCHAR(80),"
 												+ " cp VARCHAR(20))");
+				
+				st.executeUpdate("CREATE TABLE campaigns(id INT PRIMARY KEY NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),"
+												+ "NAME VARCHAR(40))");
+				
+				st.executeUpdate("CREATE TABLE campinfo(id INT,"
+												+ " service VARCHAR(40),"
+												+ " commission DOUBLE, "
+												+ "	CONSTRAINT PK_CAMPINFO PRIMARY KEY (id, service))");
+				
+				st.executeUpdate("CREATE TABLE permissions(idUser INT,"
+														+ " campaign VARCHAR(40),"
+														+ " CONSTRAINT PK_PERMISSIONS PRIMARY KEY (idUser, campaign))");
+				
+				st.executeUpdate("CREATE TABLE documents(id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),"
+													+ " idService INT,"
+													+ " name VARCHAR(40),"
+													+ " date DATE)");
 				
 				st.close();
 			}
@@ -134,8 +155,39 @@ public class DerbyConnector implements Connector {
 
 	@Override
 	public ArrayList<Campaign> getCampaigns(User u) {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Campaign> tr = new ArrayList<Campaign>();
+	    try {
+	    	Statement st = conn.createStatement();
+	    	ResultSet r;
+	    	if (u.isRoot())
+	    		r = st.executeQuery("SELECT * FROM campaigns NATURAL JOIN campinfo");
+	    	else
+	    		r = st.executeQuery("SELECT * FROM campaigns NATURAL JOIN campinfo "
+	    								+ "WHERE name IN (SELECT campaign FROM permissions WHERE idUser="+u.getExtId()+")");
+    		Campaign camp = null;
+    		String name, old = null;
+
+	    	while (r.next()) {	    		
+	    		//checking it is the first row
+	    		if (camp == null) {
+	    			name = r.getString("name");
+	    			old = name;
+	    			camp = new Campaign(name);
+	    		}
+	    		
+				if (!(name = r.getString("name")).equals(old)) {
+					tr.add(camp);
+					old = name;
+					camp = new Campaign(name);
+				}
+					
+				String service = r.getString("service");
+				camp.addService(service , new Service(service, r.getInt("commission")));
+			}
+			tr.add(camp);
+	    }
+	    catch (SQLException e) {e.printStackTrace();}
+        return tr;
 	}
 
 	@Override
@@ -227,9 +279,33 @@ public class DerbyConnector implements Connector {
 	}
 
 	@Override
-	public ArrayList<Service> getServices(String _id) {
+	public ArrayList<Service> getServices(String id) {
+		ArrayList<Service> tr = new ArrayList<Service>();
+		try {
+			Statement st = conn.createStatement();
+			ResultSet r = st.executeQuery("SELECT * FROM services WHERE idClient='"+id+"' ORDER BY date");
+			while (r.next()) {
+				Service s = new Service(r.getString("service"), r.getDouble("commission"));
+				s.setExtId(r.getInt("id"));
+				s.setCampaign(r.getString("campaign"));
+				s.setDate(new Date(r.getString("date").replace("-", "/")));
+				s.setExpiryDate(new Date(r.getString("expiry").replace("-", "/")));
+				s.setState(r.getInt("state"));
+				
+				s.setNotes(r.getString("notes"));
+				s.setReferencia(r.getString("referencia"));
+				s.setF_pago(r.getInt("f_pago"));
+				s.setpNeta(r.getDouble("p_neta"));
+				s.setCcc(r.getString("ccc"));
+				s.setCartera(r.getInt("cartera") > 0);
+				s.setAnualizar(r.getInt("anualizar") > 0);
+				
+				tr.add(s);				
+			}
+		}
+		catch (SQLException e) {e.printStackTrace();}
 		
-		return null;
+		return tr;	
 	}
 
 	@Override
@@ -409,31 +485,55 @@ public class DerbyConnector implements Connector {
 	}
 	
 	@Override
-	public ArrayList<HashMap<String, String>> getLoginInfo() {
+	public ArrayList<HashMap<String, Object>> getLoginInfo() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	@Override
-	public ArrayList<HashMap<String, String>> getUsersInfo() {
+	public ArrayList<HashMap<String, Object>> getUsersInfo() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public ArrayList<HashMap<String, String>> getServicesInfo() {
+	public ArrayList<HashMap<String, Object>> getServicesInfo() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	@Override
-	public ArrayList<HashMap<String, String>> getClientsInfo() {
+	public ArrayList<HashMap<String, Object>> getClientsInfo() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	@Override
-	public ArrayList<HashMap<String, String>> getAddressInfo() {
+	public ArrayList<HashMap<String, Object>> getAddressInfo() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public ArrayList<HashMap<String, Object>> getCampaignsInfo() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public ArrayList<HashMap<String, Object>> getCampinfoInfo() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public ArrayList<HashMap<String, Object>> getPermissionsInfo() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public ArrayList<HashMap<String, Object>> getDocumentsTableInfo() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -458,22 +558,49 @@ public class DerbyConnector implements Connector {
 	
 	@Override
 	public File getDocument(int idDocument) {
-		// TODO Auto-generated method stub
-		return null;
+		File f = null;
+	    try {
+	    	Statement st = conn.createStatement();
+	    	ResultSet r = st.executeQuery("SELECT name FROM documents WHERE id="+idDocument);
+	    	r.next();
+        	f = new File("./RHINOS.DB/docs/"+r.getString("name")+".pdf");
+	    }
+	    catch (Exception e) {e.printStackTrace();}
+	    
+	    return f;
 	}
 	
 	@Override
-	public ArrayList<RhFile> getDocumentsInfo(int idService) {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<RhFile> getDocumentsInfo(int idservice) {
+		ArrayList<RhFile> infoFiles = new ArrayList<RhFile>();
+		
+		try {
+			Statement st = conn.createStatement();
+			ResultSet r = st.executeQuery("SELECT id, name, date FROM documents "
+										+ "WHERE idService="+idservice+" "
+										+ "ORDER BY date");
+			
+			while (r.next()) {
+				RhFile f  = new RhFile();
+				f.setName(r.getString("name"));
+				f.setId(r.getInt("id"));
+				f.setIdService(idservice);
+				f.setDate(new Date(r.getString("date").replace("-", "/")));
+				
+				infoFiles.add(f);
+			}
+		}
+		catch (Exception e) {e.printStackTrace();}
+		
+		return infoFiles;
 	}
 	
 	//MIGRATE
 	@Override
-	public void setLoginInfo(ArrayList<HashMap<String, String>> array) {
+	public void setLoginInfo(ArrayList<HashMap<String, Object>> array) {
 		try {
 			Statement st = conn.createStatement();
-			for (HashMap<String, String> h : array) {
+			for (HashMap<String, Object> h : array) {
 				st.execute("INSERT INTO login (username, password) VALUES("
 												+ "'"+h.get("user")+"',"
 												+ "'"+h.get("password")+"')");
@@ -486,10 +613,10 @@ public class DerbyConnector implements Connector {
 	}
 	
 	@Override
-	public void setUsersInfo(ArrayList<HashMap<String, String>> array) {
+	public void setUsersInfo(ArrayList<HashMap<String, Object>> array) {
 		try {
 			Statement st = conn.createStatement();
-			for (HashMap<String, String> h : array) {
+			for (HashMap<String, Object> h : array) {
 				st.execute("INSERT INTO users (id, type, name, mail) VALUES("
 												+h.get("id")+","
 												+h.get("type")+","
@@ -504,10 +631,10 @@ public class DerbyConnector implements Connector {
 	}
 	
 	@Override
-	public void setClientsInfo(ArrayList<HashMap<String, String>> array) {
+	public void setClientsInfo(ArrayList<HashMap<String, Object>> array) {
 		try {
 			Statement st = conn.createStatement();
-			for (HashMap<String, String> h : array) {
+			for (HashMap<String, Object> h : array) {
 				st.execute("INSERT INTO clients (idclient, b_date, name, tlf_1, tlf_2, mail, consultancy) "
 									+ "VALUES('"+h.get("id")+"',"
 												+"'"+h.get("b_date")+"',"
@@ -525,10 +652,10 @@ public class DerbyConnector implements Connector {
 	}
 	
 	@Override
-	public void setServicesInfo(ArrayList<HashMap<String, String>> array) {
+	public void setServicesInfo(ArrayList<HashMap<String, Object>> array) {
 		try {
 			Statement st = conn.createStatement();
-			for (HashMap<String, String> h : array) {
+			for (HashMap<String, Object> h : array) {
 				st.executeUpdate("INSERT INTO services (idUser, idClient, service, "
 											+ "campaign, commission, date, expiry, "
 											+ "state, referencia, f_pago, p_neta, "
@@ -557,13 +684,13 @@ public class DerbyConnector implements Connector {
 	}
 	
 	@Override
-	public void setAddressInfo(ArrayList<HashMap<String, String>> array) {
+	public void setAddressInfo(ArrayList<HashMap<String, Object>> array) {
 		try {
 			Statement st = conn.createStatement();
-			for (HashMap<String, String> h : array) {
+			for (HashMap<String, Object> h : array) {
 				st.executeUpdate("INSERT INTO address (id, tipo_via, nombre_via, "
 											+ "numero, portal, escalera, piso, "
-											+ "puerta, poblacion, municipio, cp "
+											+ "puerta, poblacion, municipio, cp) "
 											+ "VALUES(" +"'"+h.get("id")+"',"
 														+"'"+h.get("tipo_via")+"',"
 														+"'"+h.get("nombre_via")+"',"
@@ -581,5 +708,74 @@ public class DerbyConnector implements Connector {
 			conn = createConnection(false);
 		}
 		catch (SQLException e) {e.printStackTrace();}	
+	}
+	
+	@Override
+	public void setCampaignsInfo(ArrayList<HashMap<String, Object>> array) {
+		try {
+			Statement st = conn.createStatement();
+			for (HashMap<String, Object> h : array) {
+				st.executeUpdate("INSERT INTO campaigns(name) VALUES('"+h.get("name")+"')");
+			}
+			st.close();
+			shutdownConnection();
+			conn = createConnection(false);
+		}
+		catch (SQLException e) {e.printStackTrace();}			
+	}
+	
+	@Override
+	public void setCampinfoInfo(ArrayList<HashMap<String, Object>> array) {
+		try {
+			Statement st = conn.createStatement();
+			for (HashMap<String, Object> h : array) {
+				st.executeUpdate("INSERT INTO campinfo(id, service, commission) "
+						+ "VALUES("+h.get("id")+", '"+((String)h.get("service")).replace("'", "")+"', "+h.get("commission")+")");
+			}
+			st.close();
+			shutdownConnection();
+			conn = createConnection(false);
+		}
+		catch (SQLException e) {e.printStackTrace();}	
+	}
+	
+	@Override
+	public void setPermissionsInfo(ArrayList<HashMap<String, Object>> array) {
+		try {
+			Statement st = conn.createStatement();
+			for (HashMap<String, Object> h : array) {
+				st.executeUpdate("INSERT INTO permissions(idUser, campaign)"
+						+ " VALUES("+h.get("idUser")+", '"+h.get("campaign")+"')");
+			}
+			st.close();
+			shutdownConnection();
+			conn = createConnection(false);
+		}
+		catch (SQLException e) {e.printStackTrace();}	
+	}
+	
+	@Override
+	public void setDocumentsTableInfo(ArrayList<HashMap<String, Object>> array) {
+		try {
+			Statement st = conn.createStatement();
+			for (HashMap<String, Object> h : array) {
+				String f_name = new Date().getTime()+"";
+				st.executeUpdate("INSERT INTO documents(idService, name, date)"
+											+ " VALUES("+h.get("idService")+", "
+														+"'"+f_name+"', "
+														+"'"+h.get("date")+"')");
+	        	
+				File f = new File("./RHINOS.DB/docs/"+f_name+".pdf");
+	        	FileOutputStream fos = new FileOutputStream(f);
+	        	
+	        	byte[] content = Base64.decodeBase64((String)h.get("doc"));
+	        	fos.write(content);
+	        	fos.close();
+			}
+			st.close();
+			shutdownConnection();
+			conn = createConnection(false);
+		}
+		catch (Exception e) {e.printStackTrace();}
 	}
 }
