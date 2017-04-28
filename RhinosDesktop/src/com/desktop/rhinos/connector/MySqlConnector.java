@@ -958,7 +958,7 @@ public class MySqlConnector implements Connector {
             is.close();
             return ((result.trim().length() > 0) ? new JSONArray(result) : new JSONArray());
 	    }
-	    catch (Exception e) {}
+	    catch (Exception e) {e.printStackTrace();}
 	    
 		return new JSONArray();
 	}
@@ -1034,12 +1034,26 @@ public class MySqlConnector implements Connector {
 	
 	@Override
 	public ArrayList<HashMap<String, Object>> getDocumentsTableInfo() {
-		HashSet<String> set = new HashSet<>();
-		set.add("id");
-		set.add("idService");
-		set.add("date");
-		set.add("doc");
-		return getTableInfo("documents", set);
+		ArrayList<HashMap<String, Object>> tr = new ArrayList<>();
+		
+		try {
+			ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+			JSONArray jsonArray = getDataFromDB(App.external_path+"/migrate/db_get_all_documents_info.php", nameValuePairs);
+
+			for (int i = 0; i < jsonArray.length(); i++) {
+				JSONObject jsonObj = jsonArray.getJSONObject(i);
+				
+				HashMap<String, Object> f= new HashMap<>();
+				f.put("name", cipher.decode(jsonObj.getString("name")));
+				f.put("id", jsonObj.getInt("id"));
+				f.put("idService", jsonObj.getInt("idService"));
+				f.put("date", jsonObj.getString("date"));
+				f.put("doc", getDocument(jsonObj.getInt("id")));
+				tr.add(f);
+			}
+		}
+		catch (Exception e) {e.printStackTrace();}
+		return tr;
 	}
 	
 	@Override
@@ -1097,7 +1111,6 @@ public class MySqlConnector implements Connector {
 	    nameValuePairs.add(new BasicNameValuePair("table", table));
 	   
 	    JSONArray jsonArray = getDataFromDB(App.external_path+"/migrate/db_export.php", nameValuePairs);
-	    
 	    try {
 		    for (int i = 0; i < jsonArray.length(); i++) {
 		    	JSONObject jsonObj = jsonArray.getJSONObject(i);
