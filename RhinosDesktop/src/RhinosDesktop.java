@@ -11,8 +11,8 @@ public class RhinosDesktop {
 	
 	public static void main(String[] args) {
 		
-		ImportDB i = new ImportDB(MySqlConnector.getInstance(), DerbyConnector.getInstance());
-		i.importInfo();
+//		ImportDB i = new ImportDB(MySqlConnector.getInstance(), DerbyConnector.getInstance());
+//		i.importInfo();
 		
 		RhLoader load = new RhLoader();
 		load.setVisible(true);

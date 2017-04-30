@@ -191,7 +191,6 @@ public class MySqlConnector implements Connector {
 	@Override
 	public boolean editClient(Client c) {
 
-	    //the mail data to send
 	    ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 	    nameValuePairs.add(new BasicNameValuePair("id", cipher.encode(c.getId().toString())));
 	    nameValuePairs.add(new BasicNameValuePair("b_date", formatter.format(c.getBDate())));

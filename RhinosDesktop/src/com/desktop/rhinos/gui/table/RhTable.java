@@ -140,7 +140,6 @@ public abstract class RhTable extends JPanel {
 				
 				//table font color
 				c.setForeground((value.toString().matches("-.*€")) ? Color.RED : Color.BLACK);
-				
 				return c;
 			}
 		});

@@ -29,6 +29,9 @@ public class DerbyConnector implements Connector {
 	private static DerbyConnector INSTANCE;
 	private Connection conn;
 	
+	private SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd");
+
+	
 	public synchronized static DerbyConnector getInstance() {
 		return (INSTANCE != null) ? INSTANCE : new DerbyConnector();
 	}
@@ -70,13 +73,13 @@ public class DerbyConnector implements Connector {
 												+ " commission DOUBLE,"
 												+ " date DATE,"
 												+ " expiry DATE,"
-												+ " state SMALLINT,"
-												+ " referencia VARCHAR(40),"
-												+ " f_pago SMALLINT,"
-												+ " p_neta DOUBLE,"
+												+ " state SMALLINT DEFAULT 0,"
+												+ " referencia VARCHAR(40) DEFAULT '',"
+												+ " f_pago SMALLINT DEFAULT 4,"
+												+ " p_neta DOUBLE DEFAULT 0,"
 												+ " ccc VARCHAR(40),"
-												+ " cartera SMALLINT,"
-												+ " anualizar SMALLINT,"
+												+ " cartera SMALLINT DEFAULT 0,"
+												+ " anualizar SMALLINT DEFAULT 0,"
 												+ " notes LONG VARCHAR)");
 				
 				st.executeUpdate("CREATE TABLE clients(idClient VARCHAR(40) PRIMARY KEY NOT NULL,"
@@ -88,7 +91,7 @@ public class DerbyConnector implements Connector {
 												+ " consultancy INT)");
 				
 				st.executeUpdate("CREATE TABLE address(id VARCHAR(20) PRIMARY KEY NOT NULL,"
-												+ " tipo_via VARCHAR(20),"
+												+ " tipo_via VARCHAR(40),"
 												+ " nombre_via VARCHAR(80),"
 												+ " numero VARCHAR(20),"
 												+ " portal VARCHAR(20),"
@@ -122,15 +125,15 @@ public class DerbyConnector implements Connector {
 		catch (SQLException e) {e.printStackTrace();}		
 	}
 	
-	public void restartTableSeed(String table, String column) {
+	private void restartTableSeed(String table, String column) {
 		try {
 			Statement st = conn.createStatement();
 			
 			ResultSet rs = st.executeQuery("SELECT MAX("+column+") FROM "+table);
 			rs.next();
 			int r = rs.getInt(1) +1;
-		
 			st.executeUpdate("ALTER TABLE "+table+" ALTER COLUMN "+column+" RESTART WITH "+r);
+			st.close();
 		}
 		catch (SQLException e) {e.printStackTrace();}
 	}
@@ -159,7 +162,6 @@ public class DerbyConnector implements Connector {
 
 	@Override
 	public void clearCampaigns() {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -201,6 +203,7 @@ public class DerbyConnector implements Connector {
 				camp.addService(service , new Service(service, r.getInt("commission")));
 			}
 			tr.add(camp);
+			st.close();
 	    }
 	    catch (SQLException e) {e.printStackTrace();}
         return tr;
@@ -208,14 +211,43 @@ public class DerbyConnector implements Connector {
 
 	@Override
 	public boolean addClient(Client c) {
-		// TODO Auto-generated method stub
-		return false;
+		try {
+			Statement st = conn.createStatement();
+			st.executeUpdate("INSERT INTO Clients (idClient, b_date, name, tlf_1, tlf_2, mail, consultancy) "
+									+ "VALUES('"+c.getId()+"', '"+f.format(c.getBDate())+"', '"+c.getName()+"', '"+c.getTlf_1()+"', "
+											+ "'"+c.getTlf_2()+"', '"+c.getMail()+"', "+c.getConsultancy()+")");
+			
+			st.executeUpdate("INSERT INTO Address (id, tipo_via, nombre_via, numero, portal, "
+											+"escalera, piso, puerta, poblacion, municipio, cp) " 
+									+"VALUES('"+c.getId()+"', '"+c.getDirTipoVia()+"', '"+c.getDirNombreVia()+"', '"+c.getDirNumero()+"', '"+c.getDirPortal()+"', "
+									+"'"+c.getDirEscalera()+"', '"+c.getDirPiso()+"', '"+c.getDirPuerta()+"', '"+c.getDirPoblacion()+"', '"+c.getDirMunicipio()+"', '"+c.getDirCp()+"')");
+			st.close();
+		}
+		catch(SQLException e) {e.printStackTrace(); return false;}
+		return true;
 	}
 
 	@Override
 	public boolean editClient(Client c) {
-		// TODO Auto-generated method stub
-		return false;
+		try {
+			Statement st = conn.createStatement();
+			st.executeUpdate("UPDATE Clients" 
+								+" SET name = '"+c.getName()+"', b_date = '"+f.format(c.getBDate())+"',"
+								+" tlf_1 = '"+c.getTlf_1()+"', tlf_2 = '"+c.getTlf_2()+"',"
+								+" mail = '"+c.getMail()+"', consultancy = "+c.getConsultancy()
+								+" WHERE idClient = '"+c.getId()+"'");
+			
+			st.executeUpdate("UPDATE Address"
+								+" SET tipo_via = '"+c.getDirTipoVia()+"', nombre_via = '"+c.getDirNombreVia()+"',"
+								+" numero = '"+c.getDirNumero()+"', portal = '"+c.getDirPortal()+"',"
+								+" escalera = '"+c.getDirEscalera()+"', piso = '"+c.getDirPiso()+"',"
+								+" puerta = '"+c.getDirPuerta()+"', poblacion = '"+c.getDirPoblacion()+"',"
+								+" municipio = '"+c.getDirMunicipio()+"', cp = '"+c.getDirCp()+"'"
+								+" WHERE id = '"+c.getId()+"'");
+			st.close();
+		}
+		catch (SQLException e) {e.printStackTrace(); return false;}
+		return true;
 	}
 
 	@Override
@@ -241,6 +273,8 @@ public class DerbyConnector implements Connector {
 				
 				tr.add(cl);
 			}
+			r.close();
+			st.close();
 	    }
 	    catch (Exception e) {e.printStackTrace();}
 		
@@ -282,6 +316,7 @@ public class DerbyConnector implements Connector {
 				client.setDirMunicipio(r.getString("municipio"));
 				client.setDirCp(r.getString("cp"));
 			}
+		    st.close();
 	    }
 	    catch (SQLException e) {e.printStackTrace();}
 
@@ -290,7 +325,17 @@ public class DerbyConnector implements Connector {
 
 	@Override
 	public boolean addService(int userId, Service s, Client c) {
-		// TODO Auto-generated method stub
+		try {
+			Statement st = conn.createStatement();
+			st.executeUpdate("INSERT INTO Services (idUser, idClient, service, campaign, commission, date, expiry, state, ccc, notes) " 
+								+"VALUES("+userId+", '"+c.getId()+"', '"+s.getService()+"', '"+s.getCampaign()+"', "+s.getCommission()+", "
+										+"'"+f.format(s.getDate())+"', '"+f.format(s.getExpiryDate())+"', "+s.getState()+", '', '')");
+			
+			st.close();
+			shutdownConnection();
+			conn = createConnection(false);
+		}
+		catch (SQLException e) {e.printStackTrace();}
 		return false;
 	}
 
@@ -318,28 +363,47 @@ public class DerbyConnector implements Connector {
 				
 				tr.add(s);				
 			}
+			st.close();
 		}
-		catch (SQLException e) {e.printStackTrace();}
-		
+		catch (SQLException e) {e.printStackTrace();}		
 		return tr;	
 	}
 
 	@Override
 	public void deleteService(Service service) {
-		// TODO Auto-generated method stub
-
+		try {
+			Statement st = conn.createStatement();
+			st.executeUpdate("DELETE FROM Services WHERE id = "+service.getExtId());
+			st.executeUpdate("DELETE FROM Documents WHERE idService = "+service.getExtId());
+			
+			st.close();
+		}
+		catch (SQLException e) {e.printStackTrace();}
 	}
 
 	@Override
 	public void editService(Service s) {
-		// TODO Auto-generated method stub
-
+	    try {
+	    	Statement st = conn.createStatement();
+	    	st.executeUpdate("UPDATE Services "
+								+ "SET state = "+s.getState()+", notes = '"+s.getNotes()+"', "
+								+ "referencia = '"+s.getReferencia()+"', f_pago = "+s.getF_pago()+", "
+								+ "p_neta = "+s.getPrima()+", ccc = '"+s.getCcc()+"', "
+								+ "cartera = "+(s.isCartera() ? 1 : 0)+", anualizar = "+(s.isAnualizar() ? 1 : 0)+" "
+								+ "WHERE (id = "+s.getExtId()+")");
+	    	st.close();
+		}
+		catch (Exception e) {e.printStackTrace();}
 	}
 
 	@Override
 	public void editServiceCommission(int serviceId, double commission) {
-		// TODO Auto-generated method stub
-
+		try {
+			Statement st = conn.createStatement();
+			st.executeUpdate("UPDATE Services SET commission = "+commission+" WHERE id = "+serviceId);
+			st.close();
+		}
+		catch (SQLException e) {e.printStackTrace();}
 	}
 
 	@Override
@@ -389,7 +453,6 @@ public class DerbyConnector implements Connector {
 	@Override
 	public ArrayList<Service> getUserServicesByDate(User u, Date date_in, Date date_out, int date_type) {
 		ArrayList<Service> tr = new ArrayList<Service>();
-		SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd");
 
 		try {
 			String d_type = (date_type == 0) ? "date" : "expiry";
@@ -433,14 +496,54 @@ public class DerbyConnector implements Connector {
 
 	@Override
 	public void deleteClient(String id) {
-		// TODO Auto-generated method stub
-
+		try {
+			Statement st = conn.createStatement();
+			st.executeUpdate("DELETE FROM Clients WHERE idClient='"+id+"'");
+			st.executeUpdate("DELETE FROM Services WHERE idClient='"+id+"'");
+			st.executeUpdate("DELETE FROM Address WHERE id='"+id+"'");
+			
+			st.close();
+		}
+		catch(SQLException e) {e.printStackTrace();}
+	}
+	
+	@Override
+	public void deleteDocument(int id) {
+		try {
+			Statement st = conn.createStatement();
+			st.executeUpdate("DELETE FROM Documents WHERE id="+id);
+		}
+		catch (SQLException e) {e.printStackTrace();}
+	}
+	
+	@Override
+	public void addDocument(File file, int idService, String filename) {
+		try {
+			Statement st = conn.createStatement();
+			String f_name = new Date().getTime()+"";
+			st.executeUpdate("INSERT INTO Documents(idService, name, date) "
+								+ "VALUES("+idService+", '"+f_name+"', '"+f.format(new Date())+"')");
+			
+			Path source = Paths.get(file.toURI());
+			Path target = Paths.get(new File("./RHINOS.DB/docs/"+f_name+".pdf").toURI());
+			Files.copy(source, target);
+			
+			st.close();
+			shutdownConnection();
+			conn = createConnection(false);
+		}
+		catch (Exception e) {e.printStackTrace();}
 	}
 
 	@Override
 	public void changePassword(String user, String newpass) {
-		// TODO Auto-generated method stub
+		try {
+			Statement st = conn.createStatement();
+			st.executeUpdate("UPDATE Login SET password='"+newpass+"' WHERE username='"+user+"'");
 
+			st.close();
+		}
+		catch (SQLException e) {e.printStackTrace();}
 	}
 
 	@Override
@@ -594,21 +697,9 @@ public class DerbyConnector implements Connector {
 	}
 	
 	@Override
-	public void addDocument(File f, int toModify, String r) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	@Override
 	public User getUserParent(int extId) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-	
-	@Override
-	public void deleteDocument(int id) {
-		// TODO Auto-generated method stub
-	
 	}
 	
 	@Override
@@ -700,8 +791,6 @@ public class DerbyConnector implements Connector {
 												+h.get("consultancy")+")");
 			}
 			st.close();
-			shutdownConnection();
-			conn = createConnection(false);
 		}
 		catch (SQLException e) {e.printStackTrace();}
 	}
@@ -763,8 +852,6 @@ public class DerbyConnector implements Connector {
 														+"'"+h.get("cp")+"')");
 			}
 			st.close();
-			shutdownConnection();
-			conn = createConnection(false);
 		}
 		catch (SQLException e) {e.printStackTrace();}	
 	}
