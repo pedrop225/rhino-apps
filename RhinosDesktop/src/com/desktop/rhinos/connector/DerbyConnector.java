@@ -15,6 +15,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Random;
 
 import com.android.rhinos.gest.Campaign;
 import com.android.rhinos.gest.Client;
@@ -30,7 +31,6 @@ public class DerbyConnector implements Connector {
 	private Connection conn;
 	
 	private SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd");
-
 	
 	public synchronized static DerbyConnector getInstance() {
 		return (INSTANCE != null) ? INSTANCE : new DerbyConnector();
@@ -916,6 +916,7 @@ public class DerbyConnector implements Connector {
 				Path source = Paths.get(((File)h.get("doc")).toURI());
 				Path target = Paths.get(new File("./RHINOS.DB/docs/"+f_name+".pdf").toURI());
 				Files.copy(source, target);
+				Thread.sleep(1);
 			}
 			st.close();
 			shutdownConnection();
