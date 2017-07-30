@@ -279,12 +279,11 @@ public class RhFrame extends JFrame {
 					chechUserType();
 					updateClientsTableData();
 					
+					rhPanel.revalidate();
 					/*
 					 * Solo actualizar la tabla a la que se accede por defecto, las siguientes se actualizarán
 					 * automaticamente en el momento que se acceda a ellas.
 					 * */
-				//	updateServicesTableData();
-					validate();				
 				}
 			}
 		});

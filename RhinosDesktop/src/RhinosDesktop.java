@@ -1,9 +1,6 @@
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 
-import com.desktop.rhinos.connector.DerbyConnector;
-import com.desktop.rhinos.connector.ImportDB;
-import com.desktop.rhinos.connector.MySqlConnector;
 import com.desktop.rhinos.gui.RhFrame;
 import com.desktop.rhinos.gui.RhLoader;
 
