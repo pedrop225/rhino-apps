@@ -15,7 +15,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Random;
 
 import com.android.rhinos.gest.Campaign;
 import com.android.rhinos.gest.Client;
@@ -33,7 +32,7 @@ public class DerbyConnector implements Connector {
 	private SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd");
 	
 	public synchronized static DerbyConnector getInstance() {
-		return (INSTANCE != null) ? INSTANCE : new DerbyConnector();
+		return (INSTANCE != null) ? INSTANCE : (INSTANCE = new DerbyConnector());
 	}
 	
 	private Connection createConnection(boolean create) throws SQLException {
@@ -258,11 +257,11 @@ public class DerbyConnector implements Connector {
 	    	ResultSet r;
 	    	
 	    	if (u.isRoot())
-	    		r = st.executeQuery("SELECT idClient, name, b_date, tlf_1 FROM CLIENTS");
+	    		r = st.executeQuery("SELECT idClient, name, b_date, tlf_1 FROM Clients");
 	    	else
-	    		r = st.executeQuery("SELECT DISTINCT clients.idClient, name, b_date, tlf_1 "
-	    									+ "FROM clients, services "
-	    									+ "WHERE (clients.idClient = services.idClient) AND (idUser="+u.getExtId()+")");
+	    		r = st.executeQuery("SELECT DISTINCT Clients.idClient, name, b_date, tlf_1 "
+	    									+ "FROM Services NATURAL JOIN Clients "
+	    									+ "WHERE idUser="+u.getExtId());
 	    	
 			while (r.next()) {	
 				Client cl = new Client();
@@ -416,12 +415,15 @@ public class DerbyConnector implements Connector {
 			Statement st = conn.createStatement();
 			ResultSet r = st.executeQuery("	SELECT Services.id, Clients.idClient, name, campaign, service, date, expiry, commission, state, notes, "
 												+ "referencia, f_pago, p_neta, ccc, cartera, anualizar "
-												+ "FROM Clients, Services "
+												+ "FROM Services NATURAL JOIN Clients "
 											+"WHERE (idUser="+u.getExtId()+") AND "
-												+"(Clients.idClient = Services.idClient) AND "
-												+"((state = 1 AND cartera = 1) OR (YEAR(date) ="+cal.get(Calendar.YEAR)+")) AND "
-												+"(MONTH(date) = "+(cal.get(Calendar.MONTH) +1)+")");
-			
+												+"((F_PAGO = 0) OR "
+												+"(MOD(MONTH(DATE), 2) ="+(cal.get(Calendar.MONTH)+1)+") AND (F_PAGO = 1) OR " //recibos bimensuales
+												+"(MOD(MONTH(DATE), 3) ="+(cal.get(Calendar.MONTH)+1)+") AND (F_PAGO = 2) OR "
+												+"(MOD(MONTH(DATE), 6) ="+(cal.get(Calendar.MONTH)+1)+") AND (F_PAGO = 3) OR "
+												+"(MOD(MONTH(DATE), 12) ="+(cal.get(Calendar.MONTH)+1)+") AND (F_PAGO = 4)) AND "
+												+"(CARTERA = 1 AND STATE = 1) AND (ANUALIZAR = 0 OR MONTH(DATE)="+(cal.get(Calendar.MONTH)+1)+")"
+												+"ORDER BY MONTH(DATE), SERVICE");	
 			while (r.next()) {
 				Service s = new Service(r.getString("service"), r.getDouble("commission"));
 				
