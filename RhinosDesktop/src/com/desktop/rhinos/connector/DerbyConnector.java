@@ -418,10 +418,10 @@ public class DerbyConnector implements Connector {
 												+ "FROM Services NATURAL JOIN Clients "
 											+"WHERE (idUser="+u.getExtId()+") AND "
 												+"((F_PAGO = 0) OR "
-												+"(MOD(MONTH(DATE), 2) ="+(cal.get(Calendar.MONTH)+1)+") AND (F_PAGO = 1) OR " //recibos bimensuales
-												+"(MOD(MONTH(DATE), 3) ="+(cal.get(Calendar.MONTH)+1)+") AND (F_PAGO = 2) OR "
-												+"(MOD(MONTH(DATE), 6) ="+(cal.get(Calendar.MONTH)+1)+") AND (F_PAGO = 3) OR "
-												+"(MOD(MONTH(DATE), 12) ="+(cal.get(Calendar.MONTH)+1)+") AND (F_PAGO = 4)) AND "
+												+"(MOD(MONTH(DATE), 2) = MOD("+(cal.get(Calendar.MONTH)+1)+", 2)) AND (F_PAGO = 1) OR " //recibos bimensuales
+												+"(MOD(MONTH(DATE), 3) = MOD("+(cal.get(Calendar.MONTH)+1)+", 3)) AND (F_PAGO = 2) OR "
+												+"(MOD(MONTH(DATE), 6) = MOD("+(cal.get(Calendar.MONTH)+1)+", 6)) AND (F_PAGO = 3) OR "
+												+"(MOD(MONTH(DATE), 12) = MOD("+(cal.get(Calendar.MONTH)+1)+", 12)) AND (F_PAGO = 4)) AND "
 												+"(CARTERA = 1 AND STATE = 1) AND (ANUALIZAR = 0 OR MONTH(DATE)="+(cal.get(Calendar.MONTH)+1)+")"
 												+"ORDER BY MONTH(DATE), SERVICE");	
 			while (r.next()) {
@@ -928,5 +928,48 @@ public class DerbyConnector implements Connector {
 		finally {
 			restartTableSeed("documents", "id");
 		}
+	}
+	
+	@Override
+	public ArrayList<ArrayList<Object>> getDatatoExport() {
+		
+		ArrayList<ArrayList<Object>> tr = new ArrayList<ArrayList<Object>>();
+		
+		try {
+			Statement st = conn.createStatement();
+			ResultSet r = st.executeQuery("SELECT IDCLIENT, NAME, SERVICE, REFERENCIA, P_NETA, F_PAGO, DATE, EXPIRY, CARTERA, STATE"
+											+" FROM CLIENTS NATURAL JOIN SERVICES"
+											+" WHERE IDUSER = "+App.USER.getExtId()
+											+" ORDER BY DATE ASC");
+			
+			String header[] = {"CLIENTE", "NOMBRE", "PRODUCTO", "REFERENCIA", "P_NETA", "F_PAGO", "FECHA", "VENCIMIENTO",
+								"CARTERA", "ESTADO"};
+			
+			ArrayList<Object> list = new ArrayList<Object>();
+			for (String i: header) {
+				list.add(i);
+			}
+			tr.add(list);
+			
+			while (r.next()) {
+				list = new ArrayList<Object>();
+	
+				list.add(r.getString("idclient"));
+				list.add(r.getString("name"));
+				list.add(r.getString("service"));
+				list.add(r.getString("referencia"));
+				list.add(r.getDouble("p_neta"));
+				list.add(r.getInt("f_pago"));
+				list.add(r.getDate("date"));
+				list.add(r.getDate("expiry"));
+				list.add(r.getInt("cartera"));
+				list.add(r.getInt("state"));
+				
+				tr.add(list);				
+			}
+			st.close();
+		}
+		catch (SQLException e) {e.printStackTrace();}		
+		return tr;
 	}
 }

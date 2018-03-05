@@ -120,5 +120,7 @@ public interface Connector {
 
 	public File getDocument(int idDocument);
 
-	public ArrayList<RhFile> getDocumentsInfo(int idService);	
+	public ArrayList<RhFile> getDocumentsInfo(int idService);
+	
+	public ArrayList<ArrayList<Object>> getDatatoExport();
 }

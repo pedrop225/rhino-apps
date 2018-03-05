@@ -48,6 +48,9 @@ public class RhFrame extends JFrame {
 	private JMenuItem addUser;
 	private JMenuItem editUser;
 	
+	private JMenu mExport;
+	private JMenuItem expExcel;
+	
 	private JMenu help;
 	private JMenuItem about;
 	
@@ -223,6 +226,14 @@ public class RhFrame extends JFrame {
 		edUsers.add(addUser);
 		edUsers.add(editUser);
 		edCampaigns.add(uptCampaigns);
+		//---------------------------------------
+		mExport = new JMenu("Exportar DB");
+		expExcel = new JMenuItem(" Excel");
+		expExcel.setIcon(new ImageIcon(RhFrame.class.getResource("/icons/excel.png")));
+		mExport.add(expExcel);
+		
+		mExport.setFont(App.DEFAULT_FONT);
+		expExcel.setFont(App.DEFAULT_FONT);
 		//----------------------------------------
 		help = new JMenu("Ayuda");
 		about = new JMenuItem("Acerca de ..");
@@ -236,6 +247,7 @@ public class RhFrame extends JFrame {
 		//----------------------------------------
 		mBar.add(mFile);
 		mBar.add(mEdit);
+		mBar.add(mExport);
 		mBar.add(help);
 		
 		setJMenuBar(mBar);
@@ -390,6 +402,14 @@ public class RhFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				new CampaignsUpdater().setVisible(true);
+			}
+		});
+		
+		expExcel.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new ExcelGenerator();
 			}
 		});
 	}

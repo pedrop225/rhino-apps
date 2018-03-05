@@ -1124,4 +1124,10 @@ public class MySqlConnector implements Connector {
 		catch (Exception e ){e.printStackTrace();}
 	    return tr;
 	}
+	
+	@Override
+	public ArrayList<ArrayList<Object>> getDatatoExport() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
